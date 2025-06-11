@@ -37,41 +37,6 @@
 
 
         <ui:insert name="head"/>
-        <script>
-            function adjustZoom() {
-                var screenWidth = window.innerWidth;
-                if (screenWidth &lt;= 768) { // Mobile
-                    document.body.style.zoom = "71%";
-                } else if (screenWidth &lt;= 991) { // Tablet
-                    document.body.style.zoom = "85%";
-                } else { // Desktop
-                    document.body.style.zoom = "100%";
-                }
-            }
-
-            window.onload = adjustZoom;
-            window.onresize = adjustZoom;
-        </script>
-
-        <style>
-            @media (min-width: 992px) {
-                body {
-                    zoom: 100%;
-                }
-            }
-            @media (max-width: 991px) {
-                body {
-                    zoom: 85%;
-                }
-            }
-            @media (max-width: 768px) {
-                body {
-                    zoom: 71%;
-                }
-            }
-        </style>
-
-
     </h:head>
 
     <h:body styleClass="#{guestPreferences.inputStyleClass}">
@@ -82,15 +47,13 @@
             <div class="layout-main">
 
                 <ui:include src="./topbar.xhtml" />
-                <ui:include src="./rightpanel.xhtml" />
-                <ui:include src="./breadcrumb.xhtml" />
                 <div class="layout-content">
                     <ui:insert name="content"/>
                 </div>
 
                 <ui:include src="./footer.xhtml" />
 
-                <ui:include src="./config.xhtml" />
+
 
                 <div class="layout-main-mask"></div>
             </div>
