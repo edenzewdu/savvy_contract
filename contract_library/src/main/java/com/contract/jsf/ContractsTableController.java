@@ -6,6 +6,7 @@ import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.ContractsTableFacade;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -28,6 +29,9 @@ public class ContractsTableController implements Serializable {
     private com.contract.session.ContractsTableFacade ejbFacade;
     @EJB
     private com.contract.session.AbstractFacadeQuerySavvy ejbFacade1;
+    private ContractsTable contract;
+    private List<ContractsTable> contracts;
+
     private List<ContractsTable> items = null;
     private List<ContractsTable> multiselectionItems = null;
     private List<ContractsTable> createItems = null;
@@ -64,6 +68,16 @@ public class ContractsTableController implements Serializable {
 
     public void setSelected(ContractsTable selected) {
         this.selected = selected;
+        if (selected.getEffectiveDate() == null) {
+            selected.setEffectiveDate(new Date());
+        }
+        if (selected.getInitialExpiryDate() == null) {
+            selected.setInitialExpiryDate(new Date());
+        }
+        if (selected.getCurrentExpiryDate() == null) {
+            selected.setCurrentExpiryDate(new Date());
+        }
+
     }
 
     public ContractsTable getSelected1() {

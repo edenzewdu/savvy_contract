@@ -23,6 +23,9 @@
             <h:form id="menuform">
                 <p:panelMenu styleClass="layout-menu" statefulGlobal="true">
                     <p:submenu label="Processings" class="layout-menu-container">
+                                <!--                        action="#{uRLBean.redirectWithLable('/contract/contractsTable/List.xhtml')}"-->
+                                <p:menuitem value="Contract" outcome="/contract/contractsTable/List.xhtml" />
+                                <p:menuitem value="Create Contract" outcome="/contract/contractsTable/Create.xhtml" />
 
 
                     </p:submenu>
