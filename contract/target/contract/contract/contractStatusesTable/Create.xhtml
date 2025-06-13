@@ -26,7 +26,30 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="Contract Status Details" style="width: 400px;">
+
+                                <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
+
+                                <p:panelGrid columns="2" columnClasses="label,value" style="margin-bottom:10px">
+
+                                    <h:outputLabel for="statusName" value="Status Name:" />
+                                    <p:inputText id="statusName" value="#{contractStatusesTableController.selected.statusName}" required="true" label="Status Name" />
+
+                                    <h:outputLabel for="description1" value="Description:" />
+                                    <p:inputTextarea id="description1" value="#{contractStatusesTableController.selected.description}" rows="4" cols="30" autoResize="true" />
+
+                                </p:panelGrid>
+
+                                <p:separator />
+
+                                <p:toolbar>
+                                    <p:toolbarGroup>
+                                        <p:commandButton value="Save" icon="pi pi-check" action="#{contractStatusesTableController.save}" update=":growl,contractStatusForm" />
+                                        <p:commandButton value="Cancel" icon="pi pi-times" immediate="true" action="ContractStatusesTable.xhtml?faces-redirect=true" />
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractStatusesTableController.createItems}" var="item"

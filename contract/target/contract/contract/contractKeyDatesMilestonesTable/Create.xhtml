@@ -26,7 +26,54 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="#{contractKeyDatesMilestonesTableController.editMode ? 'Edit Milestone' : 'Create Milestone'}" style="max-width: 600px; margin:auto;">
+
+                                <!-- Milestone Name -->
+                                <p:outputLabel for="milestoneName1" value="Milestone Name:" />
+                                <p:inputText id="milestoneName1" value="#{contractKeyDatesMilestonesTableController.selectedItem.milestoneName}" required="true" label="Milestone Name" />
+
+                                <!-- Description -->
+                                <p:outputLabel for="description1" value="Description:" style="margin-top:10px;" />
+                                <p:inputTextarea id="description1" value="#{contractKeyDatesMilestonesTableController.selectedItem.description}" rows="4" autoResize="true" />
+
+                                <!-- Due Date -->
+                                <p:outputLabel for="dueDate" value="Due Date:" style="margin-top:10px;" />
+                                <p:calendar id="dueDate" value="#{contractKeyDatesMilestonesTableController.selectedItem.dueDate}" pattern="MM/dd/yyyy" required="true" showButtonPanel="true" navigator="true" />
+
+                                <!-- Assigned Contact -->
+                                <p:outputLabel for="assignedContactId" value="Assigned Contact:" style="margin-top:10px;" />
+                                <p:inputText id="assignedContactId" value="#{contractKeyDatesMilestonesTableController.selectedItem.assignedContactId}" />
+
+                                <!-- Reminder Lead Days -->
+                                <p:outputLabel for="reminderLeadDays" value="Reminder Lead Days:" style="margin-top:10px;" />
+                                <p:inputText id="reminderLeadDays" value="#{contractKeyDatesMilestonesTableController.selectedItem.reminderLeadDays}" />
+
+                                <!-- Completed Date -->
+                                <p:outputLabel for="completedDate" value="Completed Date:" style="margin-top:10px;" />
+                                <p:calendar id="completedDate" value="#{contractKeyDatesMilestonesTableController.selectedItem.completedDate}" pattern="MM/dd/yyyy" showButtonPanel="true" navigator="true" />
+
+                                <!-- Users Id -->
+                                <p:outputLabel for="usersId" value="User ID:" style="margin-top:10px;" />
+                                <p:inputText id="usersId" value="#{contractKeyDatesMilestonesTableController.selectedItem.usersId}" />
+
+                                <!-- Contract Id -->
+                                <p:outputLabel for="contractId1" value="Contract ID:" style="margin-top:10px;" />
+                                <p:inputText id="contractId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.contractId}" />
+
+                                <!-- Status Id -->
+                                <p:outputLabel for="statusId1" value="Status ID:" style="margin-top:10px;" />
+                                <p:inputText id="statusId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.statusId}" />
+
+                                <!-- Responsible Party Id -->
+                                <p:outputLabel for="responsiblePartyId1" value="Responsible Party ID:" style="margin-top:10px;" />
+                                <p:inputText id="responsiblePartyId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.responsiblePartyId}" />
+
+                                <!-- Buttons -->
+                                <p:separator style="margin-top:20px; margin-bottom:20px;" />
+                                <p:commandButton value="Save" action="#{contractKeyDatesMilestonesTableController.save}" update=":growl, milestoneForm" icon="pi pi-check" />
+                                <p:commandButton value="Cancel" action="List.xhtml?faces-redirect=true" immediate="true" icon="pi pi-times" style="margin-left:10px;" />
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractKeyDatesMilestonesTableController.createItems}" var="item"

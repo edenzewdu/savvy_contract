@@ -26,7 +26,45 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="Create Contract Item">
+
+                                <h:panelGrid columns="2" cellpadding="5">
+
+                                    <h:outputLabel for="amountQuantity" value="Amount Quantity:"/>
+                                    <p:inputText id="amountQuantity" value="#{contractItemTableController.selected.amountQuantity}" required="true" label="Amount Quantity"/>
+
+                                    <h:outputLabel for="itemsTable" value="Items Table:"/>
+                                    <p:inputText id="itemsTable" value="#{contractItemTableController.selected.itemsTable}" required="true" label="Items Table"/>
+
+                                    <h:outputLabel for="unitOfMeasure" value="Unit Of Measure:"/>
+                                    <p:inputText id="unitOfMeasure" value="#{contractItemTableController.selected.unitOfMeasure}" required="true" label="Unit Of Measure"/>
+
+                                    <h:outputLabel for="unitAmount" value="Unit Amount:"/>
+                                    <p:inputText id="unitAmount" value="#{contractItemTableController.selected.unitAmount}" required="true" label="Unit Amount"/>
+
+                                    <h:outputLabel for="extendedAmount" value="Extended Amount:"/>
+                                    <p:inputText id="extendedAmount" value="#{contractItemTableController.selected.extendedAmount}" required="true" label="Extended Amount"/>
+
+                                    <h:outputLabel for="usersId" value="Users ID:"/>
+                                    <p:inputText id="usersId" value="#{contractItemTableController.selected.usersId}" required="true" label="Users ID"/>
+
+                                    <h:outputLabel for="dateEntered" value="Date Entered:"/>
+                                    <p:calendar id="dateEntered" value="#{contractItemTableController.selected.dateEnered}" pattern="MM/dd/yyyy HH:mm:ss" showTime="true" required="true" label="Date Entered"/>
+
+                                    <h:outputLabel for="dateUpdated" value="Date Updated:"/>
+                                    <p:calendar id="dateUpdated" value="#{contractItemTableController.selected.dateUpdated}" pattern="MM/dd/yyyy HH:mm:ss" showTime="true" required="true" label="Date Updated"/>
+
+                                    <h:outputLabel for="contractId1" value="Contract ID:"/>
+                                    <p:inputText id="contractId1" value="#{contractItemTableController.selected.contractId}" required="true" label="Contract ID"/>
+
+                                </h:panelGrid>
+
+                                <p:separator/>
+
+                                <p:commandButton value="Save" actionListener="#{contractItemTableController.save}" update=":growl" icon="pi pi-check" />
+                                <p:commandButton value="Cancel" immediate="true" action="ContractItemTableList.xhtml?faces-redirect=true" icon="pi pi-times" />
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractItemTableController.createItems}" var="item"

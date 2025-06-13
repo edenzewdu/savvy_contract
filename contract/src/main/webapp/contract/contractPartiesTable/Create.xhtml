@@ -26,7 +26,37 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+
+                            <p:panel header="Party Details Form" style="max-width: 600px; margin: auto;">
+
+                                <!-- Legal Name -->
+                                <p:outputLabel for="legalName1" value="Legal Name:" />
+                                <p:inputTextarea id="legalName1" value="#{contractPartiesTableController.selected.legalName}" required="true" autoResize="true"/>
+
+                                <!-- Short Name -->
+                                <p:outputLabel for="shortName" value="Short Name:" />
+                                <p:inputText id="shortName" value="#{contractPartiesTableController.selected.shortName}" maxlength="100" />
+
+                                <!-- Party Type -->
+<!--                                <p:outputLabel for="partyType" value="Party Type:" />-->
+<!--                                <p:selectOneMenu id="partyType" value="#{contractPartiesTableController.selected.partyTypeId}" converter="javax.faces.Integer">-->
+<!--                                    <f:selectItem itemLabel="Select Type" itemValue="" />-->
+<!--                                    <f:selectItems value="#{contractPartiesTableController.selectedTypes}" var="type"-->
+<!--                                                   itemLabel="#{type.name}" itemValue="#{type.id}" />-->
+<!--                                </p:selectOneMenu>-->
+
+                                <!-- Registration Number -->
+                                <p:outputLabel for="registrationNumber" value="Registration Number:" />
+                                <p:inputText id="registrationNumber" value="#{contractPartiesTableController.selected.registrationNumber}" maxlength="100" />
+
+                                <!-- Address Number AB -->
+                                <p:outputLabel for="addressNumber" value="Address Number AB:" />
+                                <p:inputText id="addressNumber" value="#{contractPartiesTableController.selected.addressNumberAb}" />
+
+                                <!-- Submit -->
+                                <p:commandButton value="Submit" action="#{contractPartiesTableController.save}" update="@form" styleClass="p-mt-3" />
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractPartiesTableController.createItems}" var="item"

@@ -26,7 +26,30 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="Create New Party Type">
+
+                                <p:messages id="messages" autoUpdate="true" />
+
+                                <p:panelGrid columns="2" columnClasses="label,value" style="width:100%;">
+
+                                    <h:outputLabel for="typeName" value="Type Name:" />
+                                    <p:inputText id="typeName" value="#{partyTypesTableController.selected.typeName}"
+                                                 required="true" label="Type Name" />
+
+                                </p:panelGrid>
+
+                                <p:toolbar style="margin-top:1em;">
+                                    <p:toolbarGroup>
+                                        <p:commandButton value="Save" icon="pi pi-check"
+                                                         action="#{partyTypesTableController.create}"
+                                                         update=":growl,createForm"
+                                                         oncomplete="if (!args.validationFailed) window.history.back();" />
+                                        <p:commandButton value="Cancel" icon="pi pi-times" type="button"
+                                                         onclick="window.history.back()" />
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{partyTypesTableController.createItems}" var="item"

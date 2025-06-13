@@ -26,7 +26,57 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="New Warranty Record">
+                                <p:messages id="messages" closable="true" />
+                                <p:panelGrid columns="2" columnClasses="label,value" styleClass="ui-fluid">
+
+                                    <p:outputLabel for="contractId" value="Contract ID:" />
+                                    <p:inputText id="contractId" value="#{warrantiesTableController.selected.contractId}" required="true" />
+
+                                    <p:outputLabel for="warrantedItemDescription" value="Description:" />
+                                    <p:inputTextarea id="warrantedItemDescription" value="#{warrantiesTableController.selected.warrantedItemDescription}" autoResize="true" />
+
+                                    <p:outputLabel for="manufacturerModel" value="Manufacturer Model:" />
+                                    <p:inputText id="manufacturerModel" value="#{warrantiesTableController.selected.manufacturerModel}" />
+
+                                    <p:outputLabel for="serialNumber" value="Serial Number:" />
+                                    <p:inputText id="serialNumber" value="#{warrantiesTableController.selected.serialNumber}" />
+
+                                    <p:outputLabel for="warrantyType" value="Warranty Type:" />
+                                    <p:inputText id="warrantyType" value="#{warrantiesTableController.selected.warrantyType}" />
+
+                                    <p:outputLabel for="warrantyProviderPartyId" value="Provider Party ID:" />
+                                    <p:inputText id="warrantyProviderPartyId" value="#{warrantiesTableController.selected.warrantyProviderPartyId}" />
+
+                                    <p:outputLabel for="startDate" value="Start Date:" />
+                                    <p:datePicker id="startDate" value="#{warrantiesTableController.selected.startDate}" pattern="MM/dd/yyyy" showIcon="true" />
+
+                                    <p:outputLabel for="endDate" value="End Date:" />
+                                    <p:datePicker id="endDate" value="#{warrantiesTableController.selected.endDate}" pattern="MM/dd/yyyy" showIcon="true" />
+
+                                    <p:outputLabel for="coverageScopeText1" value="Coverage Scope:" />
+                                    <p:inputTextarea id="coverageScopeText1" value="#{warrantiesTableController.selected.coverageScopeText}" autoResize="true" />
+
+                                    <p:outputLabel for="exclusionsText1" value="Exclusions:" />
+                                    <p:inputTextarea id="exclusionsText1" value="#{warrantiesTableController.selected.exclusionsText}" autoResize="true" />
+
+                                    <p:outputLabel for="isActive" value="Is Active?" />
+                                    <p:selectBooleanCheckbox id="isActive" value="#{warrantiesTableController.selected.isActive}" />
+
+                                    <p:outputLabel for="isVoided" value="Is Voided?" />
+                                    <p:selectBooleanCheckbox id="isVoided" value="#{warrantiesTableController.selected.isVoided}" />
+
+                                    <p:outputLabel for="voidReason1" value="Void Reason:" />
+                                    <p:inputText id="voidReason1" value="#{warrantiesTableController.selected.voidReason}" />
+
+                                </p:panelGrid>
+
+                                <p:separator />
+
+                                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{warrantiesTableController.create}" update=":WarrantiesTableCreateForm:messages" />
+                                <p:commandButton value="Back to List" icon="pi pi-arrow-left" action="List.xhtml?faces-redirect=true" styleClass="p-ml-2" />
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{warrantiesTableController.createItems}" var="item"

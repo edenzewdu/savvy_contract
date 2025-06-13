@@ -26,7 +26,30 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="Create New Milestone Status">
+
+                                <p:messages id="messages" autoUpdate="true" />
+
+                                <p:panelGrid columns="2" columnClasses="label,value" style="width:100%;">
+
+                                    <h:outputLabel for="statusName" value="Status Name:" />
+                                    <p:inputText id="statusName" value="#{milestoneStatusesTableController.selected.statusName}"
+                                                 required="true" label="Status Name" />
+
+                                </p:panelGrid>
+
+                                <p:toolbar style="margin-top:1em;">
+                                    <p:toolbarGroup>
+                                        <p:commandButton value="Save" icon="pi pi-check"
+                                                         action="#{milestoneStatusesTableController.create}"
+                                                         update=":growl,createForm"
+                                                         oncomplete="if (!args.validationFailed) window.history.back();" />
+                                        <p:commandButton value="Cancel" icon="pi pi-times" type="button"
+                                                         onclick="window.history.back()" />
+                                    </p:toolbarGroup>
+                                </p:toolbar>
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{milestoneStatusesTableController.createItems}" var="item"

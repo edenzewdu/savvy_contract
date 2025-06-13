@@ -26,7 +26,30 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            //Header data
+                            <p:panel header="Create Contract Party Role">
+
+                                <h:panelGrid columns="2" cellpadding="5">
+
+                                    <h:outputLabel for="isPrimaryCounterparty" value="Primary Counterparty:" />
+                                    <p:selectBooleanCheckbox id="isPrimaryCounterparty" value="#{contractPartyRolesTableController.selected.isPrimaryCounterparty}" />
+
+                                    <h:outputLabel for="contractId1" value="Contract ID:" />
+                                    <p:inputText id="contractId1" value="#{contractPartyRolesTableController.selected.contractId}" required="true" label="Contract ID" />
+
+                                    <h:outputLabel for="partyId1" value="Party ID:" />
+                                    <p:inputText id="partyId1" value="#{contractPartyRolesTableController.selected.partyId}" required="true" label="Party ID" />
+
+                                    <h:outputLabel for="roleInContractId1" value="Role In Contract ID:" />
+                                    <p:inputText id="roleInContractId1" value="#{contractPartyRolesTableController.selected.roleInContractId}" required="true" label="Role In Contract ID" />
+
+                                </h:panelGrid>
+
+                                <p:separator />
+
+                                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{contractPartyRolesTableController.save}" update=":growl" />
+                                <p:commandButton value="Cancel" icon="pi pi-times" immediate="true" action="ContractPartyRolesTableList.xhtml?faces-redirect=true" />
+
+                            </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractPartyRolesTableController.createItems}" var="item"
