@@ -26,24 +26,20 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            <p:panel header="New Payment Frequency" styleClass="p-mb-4">
+                    <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-                                <p:messages id="messages" autoUpdate="true" closable="true" />
 
-                                <h:panelGrid columns="2" cellpadding="5">
 
+                    <!-- Frequency Name -->
+                    <div class="field col-12">
                                     <h:outputLabel for="frequencyName" value="Frequency Name:" />
                                     <p:inputText id="frequencyName" value="#{paymentFrequenciesTableController.selected.frequencyName}" required="true" label="Frequency Name" />
-
-                                </h:panelGrid>
-
+                    </div>
                                 <p:separator />
 
-                                <p:commandButton value="Save" icon="pi pi-check" action="#{paymentFrequenciesTableController.create}"
+                                <p:commandButton value="Save" icon="pi pi-check" action="#{paymentFrequenciesTableController.save()}"
                                                  update=":growl" styleClass="p-mr-2"/>
-                                <p:commandButton value="Cancel" icon="pi pi-times" onclick="window.history.back()" type="button" />
-
-                            </p:panel>
+                            </div>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{paymentFrequenciesTableController.createItems}" var="item"

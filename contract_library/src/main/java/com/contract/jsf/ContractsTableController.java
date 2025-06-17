@@ -37,7 +37,7 @@ public class ContractsTableController implements Serializable {
     private List<ContractsTable> createItems = null;
     private List<ContractsTable> editItems = null;
     private List<ContractsTable> filteredValues = null;
-    private ContractsTable selected;
+    private ContractsTable selected = new ContractsTable();
     private ContractsTable selected1;
     private ContractsTable selected2 = new ContractsTable();
     private String dataName = "ContractsTable";
@@ -220,7 +220,7 @@ public class ContractsTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (ContractsTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

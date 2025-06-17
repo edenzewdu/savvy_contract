@@ -206,7 +206,7 @@ public class RetentionsTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (RetentionsTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

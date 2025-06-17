@@ -27,42 +27,83 @@
                         <br/>
                         <p:card>
                             <p:panel header="Create Contract Item">
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-                                <h:panelGrid columns="2" cellpadding="5">
 
+                                <div class="field col-12">
                                     <h:outputLabel for="amountQuantity" value="Amount Quantity:"/>
                                     <p:inputText id="amountQuantity" value="#{contractItemTableController.selected.amountQuantity}" required="true" label="Amount Quantity"/>
+                                </div>
 
+                                <div class="field col-12 md:col-3">
                                     <h:outputLabel for="itemsTable" value="Items Table:"/>
                                     <p:inputText id="itemsTable" value="#{contractItemTableController.selected.itemsTable}" required="true" label="Items Table"/>
+                                </div>
 
+                                <div class="field col-12 md:col-3">
                                     <h:outputLabel for="unitOfMeasure" value="Unit Of Measure:"/>
-                                    <p:inputText id="unitOfMeasure" value="#{contractItemTableController.selected.unitOfMeasure}" required="true" label="Unit Of Measure"/>
+                                    <p:inputNumber id="unitOfMeasure" value="#{contractItemTableController.selected.unitOfMeasure}" required="true" label="Unit Of Measure"/>
+                                </div>
 
+                                <div class="field col-12 md:col-3">
                                     <h:outputLabel for="unitAmount" value="Unit Amount:"/>
                                     <p:inputText id="unitAmount" value="#{contractItemTableController.selected.unitAmount}" required="true" label="Unit Amount"/>
+                                </div>
 
+                                <div class="field col-12 md:col-3">
                                     <h:outputLabel for="extendedAmount" value="Extended Amount:"/>
                                     <p:inputText id="extendedAmount" value="#{contractItemTableController.selected.extendedAmount}" required="true" label="Extended Amount"/>
+                                </div>
 
-                                    <h:outputLabel for="usersId" value="Users ID:"/>
-                                    <p:inputText id="usersId" value="#{contractItemTableController.selected.usersId}" required="true" label="Users ID"/>
+<!--                                <div class="field col-12">-->
+<!--                                    <h:outputLabel for="usersId" value="Users ID:"/>-->
+<!--                                    <p:inputText id="usersId" value="#{contractItemTableController.selected.usersId}" required="true" label="Users ID"/>-->
+<!--                                </div>-->
 
+                                <div class="field col-12 md:col-6">
                                     <h:outputLabel for="dateEntered" value="Date Entered:"/>
-                                    <p:calendar id="dateEntered" value="#{contractItemTableController.selected.dateEnered}" pattern="MM/dd/yyyy HH:mm:ss" showTime="true" required="true" label="Date Entered"/>
+                                    <p:datePicker id="dateEntered"
+                                                  value="#{contractItemTableController.selected.dateEnered}"
+                                                  pattern="yyyy-MM-dd"
+                                                  placeholder="Select date"
+                                                  showIcon="true"
+                                                  monthNavigator="true"
+                                                  yearNavigator="true"
+                                                  styleClass="w-full">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    </p:datePicker>
+                                </div>
 
+                                <div class="field col-12 md:col-6">
                                     <h:outputLabel for="dateUpdated" value="Date Updated:"/>
-                                    <p:calendar id="dateUpdated" value="#{contractItemTableController.selected.dateUpdated}" pattern="MM/dd/yyyy HH:mm:ss" showTime="true" required="true" label="Date Updated"/>
+                                    <p:datePicker id="dateUpdated"
+                                                  value="#{contractItemTableController.selected.dateUpdated}"
+                                                  pattern="yyyy-MM-dd"
+                                                  placeholder="Select date"
+                                                  showIcon="true"
+                                                  monthNavigator="true"
+                                                  yearNavigator="true"
+                                                  styleClass="w-full">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    </p:datePicker>
+                                </div>
 
+                                <div class="field col-12">
                                     <h:outputLabel for="contractId1" value="Contract ID:"/>
-                                    <p:inputText id="contractId1" value="#{contractItemTableController.selected.contractId}" required="true" label="Contract ID"/>
+                                    <p:selectOneMenu id="contractId1" value="#{contractItemTableController.selected.contractId}">
+                                        <f:selectItem itemLabel="Select Party Type" itemValue="" />
+                                        <f:selectItems value="#{contractsTableController.items}" var="type"
+                                                       itemLabel="#{type.contractTitle}"
+                                                       itemValue="#{type.id}" />
+                                    </p:selectOneMenu>
+                                </div>
 
-                                </h:panelGrid>
 
                                 <p:separator/>
 
                                 <p:commandButton value="Save" actionListener="#{contractItemTableController.save}" update=":growl" icon="pi pi-check" />
-                                <p:commandButton value="Cancel" immediate="true" action="ContractItemTableList.xhtml?faces-redirect=true" icon="pi pi-times" />
+
+                                </div>
 
                             </p:panel>
                         </p:card>

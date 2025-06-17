@@ -207,7 +207,7 @@ public class ContractItemTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (ContractItemTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

@@ -206,7 +206,7 @@ public class ContractKeyDatesMilestonesTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (ContractKeyDatesMilestonesTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

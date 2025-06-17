@@ -206,7 +206,7 @@ public class PenaltiesController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (Penalties item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

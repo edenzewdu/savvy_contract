@@ -15,7 +15,7 @@
                 <p:toolbar>
                     <p:toolbarGroup>
                         <p:commandButton value="Save" icon="pi pi-check"
-                                         actionListener="#{contractsTableController.save}"
+                                         action="#{contractsTableController.save}"
                                          update="@form"
                                          styleClass="p-button-success" />
                         <p:commandButton value="Cancel" icon="pi pi-times"
@@ -29,114 +29,183 @@
                     </p:toolbarGroup>
                 </p:toolbar>
             </p:panel>
+            <p:panel header="Contract Information" styleClass="mb-3 p-3" >
+                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-            <p:panel header="Contract Information" >
-                <p:panelGrid columns="2" style="width: 100%; margin: 2% 2% 2% 4%;" columnClasses="" >
-<div class="ui-fluid formgrid grid">
+                    <!-- Contract Title -->
                     <div class="field col-12">
-                        <h:outputLabel for="contractTitle" value="Contract Title:"/>
-                        <p:inputTextarea id="contractTitle" value="#{contractsTableController.selected.contractTitle}" autoResize="false"  style="width: 50%" />
+                        <h:outputLabel for="contractTitle" value="Contract Title:" />
+                        <p:inputText id="contractTitle"
+                                         value="#{contractsTableController.selected.contractTitle}"
+                                         styleClass="w-full" />
                     </div>
 
+                    <!-- Reference Number -->
                     <div class="field col-12">
-                        <h:outputLabel for="referenceNumber" value="Reference Number:"/>
-                        <p:inputText id="referenceNumber" value="#{contractsTableController.selected.referenceNumber}" style="width: 50%"/>
+                        <h:outputLabel for="referenceNumber" value="Reference Number:" />
+                        <p:inputText id="referenceNumber"
+                                     value="#{contractsTableController.selected.referenceNumber}"
+                                     styleClass="w-full" />
                     </div>
 
-<!--                    <div>-->
-<!--                        <h:outputLabel for="contractTypeId" value="Contract Type ID:"/>-->
-<!--                        <p:inputText id="contractTypeId" value="#{contractsTableController.selected.contractTypeId}" style="width: 50%"/>-->
-
-<!--                    </div>-->
-<!--                    <div>-->
-<!--                        <h:outputLabel for="contractStatusId" value="Contract Status ID:"/>-->
-<!--                        <p:inputText id="contractStatusId" value="#{contractsTableController.selected.contractStatusId}" style="width: 50%"/>-->
-<!--                    </div>-->
-
+                    <!-- contractTypeId  -->
                     <div class="field col-12 md:col-6">
-                        <h:outputLabel for="descriptionScope" value="Description Scope:"/>
-                        <p:inputTextarea id="descriptionScope" value="#{contractsTableController.selected.descriptionScope}" autoResize="false" style="width: 50%"/>
-                    </div>
-                    <div class="field col-12 md:col-3">
-                    <h:outputLabel for="effectiveDate" value="Effective Date:"/>
-                    <p:datePicker id="effectiveDate"
-                                  value="#{contractsTableController.selected.effectiveDate}"
-                                  pattern="yyyy-MM-dd"
-                                  placeholder="Select current expiry date"
-                                  showIcon="true"
-                                  monthNavigator="true"
-                                  yearNavigator="true"
-                                  style="flex: 1; width: 100%" >
-                        <f:convertDateTime pattern="yyyy-MM-dd" />
-                    </p:datePicker>
-                    </div>
-                    <div class="field col-12 md:col-3">
-                    <h:outputLabel for="initialExpiryDate" value="Initial Expiry Date:"/>
-                    <p:datePicker id="initialExpiryDate"
-                                  value="#{contractsTableController.selected.initialExpiryDate}"
-                                  pattern="yyyy-MM-dd"
-                                  placeholder="Select current expiry date"
-                                  showIcon="true"
-                                  monthNavigator="true"
-                                  yearNavigator="true"
-                                  style="flex: 1;" >
-                        <f:convertDateTime pattern="yyyy-MM-dd" />
-                    </p:datePicker>
-                    </div>
-                    <div class="field col-12 md:col-3">
-                    <h:outputLabel for="currentExpiryDate" value="Current Expiry Date:"/>
-                    <p:datePicker id="currentExpiryDate"
-                                  value="#{contractsTableController.selected.currentExpiryDate}"
-                                  pattern="yyyy-MM-dd"
-                                  placeholder="Select current expiry date"
-                                  showIcon="true"
-                                  monthNavigator="true"
-                                  yearNavigator="true"
-                                  style="flex: 1;" >
-                        <f:convertDateTime pattern="yyyy-MM-dd" />
-                    </p:datePicker>
-                    </div>
-                    <div class="field col-12">
-                    <h:outputLabel for="noticePeriod" value="Notice Period Days:"/>
-                    <p:inputNumber id="noticePeriod" value="#{contractsTableController.selected.noticePeriodDaysForTermination}" style="width: 50%" minValue="0"/>
-                    </div>
-                    <div class="field col-12 md:col-6">
-                    <h:outputLabel for="autoRenewal" value="Auto Renewal Enabled:"/>
-                    <p:selectBooleanCheckbox id="autoRenewal" value="#{contractsTableController.selected.autoRenewalEnabled}" style="width: 50%"/>
-                    </div>
-                    <div class="field col-12 md:col-6">
-                    <h:outputLabel for="renewalTerm" value="Renewal Term Months:"/>
-                    <p:inputNumber id="renewalTerm" value="#{contractsTableController.selected.renewalTermMonths}" style="width: 50%" minValue="0"/>
-                    </div>
-                    <div class="field col-12">
-                    <h:outputLabel for="contractValue" value="Contract Value:"/>
-                    <p:inputNumber id="contractValue" value="#{contractsTableController.selected.contractValue}" style="width: 50%"/>
-                    </div>
-                    <div class="field col-12">
-                    <h:outputLabel for="currencyCode" value="Currency Code:"/>
-                    <p:selectOneMenu id="currencyCode" value="#{contractsTableController.selected.currencyCode}" style="width: 50%">
-                        <p:menuitem value="ETB"/>
-                        <p:menuitem value="USD"/>
-                        <p:menuitem value="EUR"/>
-                    </p:selectOneMenu>
-                    </div>
-                    <div class="field col-12">
-                    <h:outputLabel for="governingLaw" value="Governing Law Jurisdiction:"/>
-                    <p:inputText id="governingLaw" value="#{contractsTableController.selected.governingLawJurisdiction}" style="width: 50%"/>
-                    </div>
-                    <div class="field col-12">
-                    <h:outputLabel for="contractIdentitySide" value="Contract Identity Side:"/>
-                    <p:inputText id="contractIdentitySide" value="#{contractsTableController.selected.contractIdentitySide}" style="width: 50%"/>
+                        <h:outputLabel for="contractTypeId" value="Contract Type:" />
+                        <p:selectOneMenu id="contractTypeId"
+                                         value="#{contractsTableController.selected.contractTypeId}"
+                                         styleClass="w-full">
+                            <f:selectItem itemLabel="Select Contract Type" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{contractTypesTableController.items}"
+                                           var="type"
+                                           itemLabel="#{type.typeName}"
+                                           itemValue="#{type}"
+                                           itemDescription="#{type.description}" />
+                        </p:selectOneMenu>
                     </div>
 
-</div>
-                </p:panelGrid>
+                    <!-- contractTypeId  -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="contractStatusId" value="Contract Status:" />
+                        <p:selectOneMenu id="contractStatusId"
+                                         value="#{contractsTableController.selected.contractStatusId}"
+                                         styleClass="w-full">
+                            <f:selectItem itemLabel="Select Contract Status" itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{contractStatusesTableController.items}"
+                                           var="type"
+                                           itemLabel="#{type.statusName}"
+                                           itemValue="#{type}"
+                                           itemDescription="#{type.description}" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <!-- Description Scope -->
+                    <div class="field col-12">
+                        <h:outputLabel for="descriptionScope" value="Description Scope:" />
+                        <p:inputTextarea id="descriptionScope"
+                                         value="#{contractsTableController.selected.descriptionScope}"
+                                         autoResize="false"
+                                         rows="3"
+                                         styleClass="w-full" />
+                    </div>
+
+                    <!-- Effective Date -->
+                    <div class="field col-12 md:col-4">
+                        <h:outputLabel for="effectiveDate" value="Effective Date:" />
+                        <p:datePicker id="effectiveDate"
+                                      value="#{contractsTableController.selected.effectiveDate}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      styleClass="w-full">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
+                    <!-- Initial Expiry Date -->
+                    <div class="field col-12 md:col-4">
+                        <h:outputLabel for="initialExpiryDate" value="Initial Expiry Date:" />
+                        <p:datePicker id="initialExpiryDate"
+                                      value="#{contractsTableController.selected.initialExpiryDate}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      styleClass="w-full">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
+                    <!-- Current Expiry Date -->
+                    <div class="field col-12 md:col-4">
+                        <h:outputLabel for="currentExpiryDate" value="Current Expiry Date:" />
+                        <p:datePicker id="currentExpiryDate"
+                                      value="#{contractsTableController.selected.currentExpiryDate}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      styleClass="w-full">
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
+                    <!-- Notice Period -->
+                    <div class="field col-12 md:col-4">
+                        <h:outputLabel for="noticePeriod" value="Notice Period Days:" />
+                        <p:inputNumber id="noticePeriod"
+                                       value="#{contractsTableController.selected.noticePeriodDaysForTermination}"
+                                       styleClass="w-full"
+                                       minValue="0" />
+                    </div>
+
+                    <!-- Auto Renewal -->
+                    <div class="field col-12 md:col-4" style="margin-top: 2%">
+                        <h:outputLabel for="autoRenewal" value="Auto Renewal Enabled:"  style="margin-right: 1%"/>
+                        <p:selectBooleanCheckbox id="autoRenewal"
+                                                 value="#{contractsTableController.selected.autoRenewalEnabled}" />
+                    </div>
+
+                    <!-- Renewal Term -->
+                    <div class="field col-12 md:col-4">
+                        <h:outputLabel for="renewalTerm" value="Renewal Term Months:" />
+                        <p:inputNumber id="renewalTerm"
+                                       value="#{contractsTableController.selected.renewalTermMonths}"
+                                       styleClass="w-full"
+                                       minValue="0" />
+                    </div>
+
+                    <!-- Contract Value -->
+                    <div class="field col-12">
+                        <h:outputLabel for="contractValue" value="Contract Value:" />
+                        <p:inputNumber id="contractValue"
+                                       value="#{contractsTableController.selected.contractValue}"
+                                       styleClass="w-full" />
+                    </div>
+
+                    <!-- Currency Code -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="currencyCode" value="Currency Code:" />
+                        <p:selectOneMenu id="currencyCode"
+                                         value="#{contractsTableController.selected.currencyCode}"
+                                         styleClass="w-full">
+                            <f:selectItem itemLabel="Select" itemValue="" noSelectionOption="true" />
+                            <f:selectItem itemLabel="ETB" itemValue="ETB" />
+                            <f:selectItem itemLabel="USD" itemValue="USD" />
+                            <f:selectItem itemLabel="EUR" itemValue="EUR" />
+                        </p:selectOneMenu>
+                    </div>
+
+                    <!-- Governing Law -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="governingLaw" value="Governing Law Jurisdiction:" />
+                        <p:inputText id="governingLaw"
+                                     value="#{contractsTableController.selected.governingLawJurisdiction}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Contract Identity Side -->
+                    <div class="field col-12">
+                        <h:outputLabel for="contractIdentitySide" value="Contract Identity Side:" />
+                        <p:inputText id="contractIdentitySide"
+                                     value="#{contractsTableController.selected.contractIdentitySide}"
+                                     styleClass="w-full" />
+                    </div>
+
+                </div>
             </p:panel>
+
 
             <p:spacer height="20"/>
 
             <p:panel header="Dates &amp; Fees">
-                <p:panelGrid columns="2" style="width: 100%; margin: 2% 2% 2% 4%;" columnClasses="ui-grid-col-2,ui-grid-col-12">
+                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
+
+
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="initialStartDate" value="Initial Start Date:"/>
                     <p:datePicker id="initialStartDate"
                                   value="#{contractsTableController.selected.initalStartDate}"
@@ -148,6 +217,9 @@
                                   style="flex: 1;" >
                         <f:convertDateTime pattern="yyyy-MM-dd" />
                     </p:datePicker>
+                </div>
+
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="endStartDate" value="End Start Date:"/>
                     <p:datePicker id="endStartDate"
                                   value="#{contractsTableController.selected.endStartDate}"
@@ -159,51 +231,81 @@
                                   style="flex: 1;" >
                         <f:convertDateTime pattern="yyyy-MM-dd" />
                     </p:datePicker>
+                </div>
+
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="cancellationFee" value="Cancellation Fee:"/>
                     <p:inputNumber id="cancellationFee" value="#{contractsTableController.selected.cancellationFee}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="retinageAmount" value="Retinage Amount:"/>
                     <p:inputNumber id="retinageAmount" value="#{contractsTableController.selected.retinageAmount}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="taxRate" value="Tax Rate:"/>
                     <p:inputNumber id="taxRate" value="#{contractsTableController.selected.taxRate}" style="width: 50%"/>
-                </p:panelGrid>
+                </div>
+                </div>
             </p:panel>
 
             <p:spacer height="20"/>
 
             <p:panel header="Addresses">
-                <p:panelGrid columns="2" style="width: 100%; margin: 2% 2% 2% 4%;" columnClasses="ui-grid-col-2,ui-grid-col-12">
+                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
+
+
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressCustomer1" value="Address Number Customer 1:"/>
                     <p:inputNumber id="addressCustomer1" value="#{contractsTableController.selected.addressNumberCustomer1}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressCustomer2" value="Address Number Customer 2:"/>
                     <p:inputNumber id="addressCustomer2" value="#{contractsTableController.selected.addressNumberCustomer2}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressCustomer3" value="Address Number Customer 3:"/>
                     <p:inputNumber id="addressCustomer3" value="#{contractsTableController.selected.addressNumberCustomer3}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressRep1" value="Address Number Rep 1:"/>
                     <p:inputNumber id="addressRep1" value="#{contractsTableController.selected.addressNumberRep1}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressRep2" value="Address Number Rep 2:"/>
                     <p:inputNumber id="addressRep2" value="#{contractsTableController.selected.addressNumberRep2}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-6">
                     <h:outputLabel for="addressRep3" value="Address Number Rep 3:"/>
                     <p:inputNumber id="addressRep3" value="#{contractsTableController.selected.addressNumberRep3}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12">
                     <h:outputLabel for="addressRep4" value="Address Number Rep 4:"/>
                     <p:inputNumber id="addressRep4" value="#{contractsTableController.selected.addressNumberRep4}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="addressPrepared" value="Prepared By:"/>
                     <p:inputNumber id="addressPrepared" value="#{contractsTableController.selected.addressNumberPrepared}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="addressApproved" value="Approved By:"/>
                     <p:inputNumber id="addressApproved" value="#{contractsTableController.selected.addressNumberAproved}" style="width: 50%"/>
+                </div>
 
+                <div class="field col-12 md:col-4">
                     <h:outputLabel for="addressChecked" value="Checked By:"/>
                     <p:inputNumber id="addressChecked" value="#{contractsTableController.selected.addressNumberChecked}" style="width: 50%"/>
-                </p:panelGrid>
+                </div>
+                </div>
             </p:panel>
 
             <p:spacer height="20"/>

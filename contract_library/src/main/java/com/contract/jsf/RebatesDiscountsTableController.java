@@ -206,7 +206,7 @@ public class RebatesDiscountsTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (RebatesDiscountsTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

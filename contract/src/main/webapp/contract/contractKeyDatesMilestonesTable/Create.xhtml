@@ -26,53 +26,109 @@
                         </p:toolbar>
                         <br/>
                         <p:card>
-                            <p:panel header="#{contractKeyDatesMilestonesTableController.editMode ? 'Edit Milestone' : 'Create Milestone'}" style="max-width: 600px; margin:auto;">
+                            <p:panel header="Create Milestone">
+                            <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
+
+
 
                                 <!-- Milestone Name -->
+                            <div class="field col-12">
                                 <p:outputLabel for="milestoneName1" value="Milestone Name:" />
-                                <p:inputText id="milestoneName1" value="#{contractKeyDatesMilestonesTableController.selectedItem.milestoneName}" required="true" label="Milestone Name" />
+                                <p:inputText id="milestoneName1" value="#{contractKeyDatesMilestonesTableController.selected.milestoneName}" required="true" label="Milestone Name" />
+                            </div>
 
                                 <!-- Description -->
+                            <div class="field col-12">
                                 <p:outputLabel for="description1" value="Description:" style="margin-top:10px;" />
-                                <p:inputTextarea id="description1" value="#{contractKeyDatesMilestonesTableController.selectedItem.description}" rows="4" autoResize="true" />
+                                <p:inputTextarea id="description1" value="#{contractKeyDatesMilestonesTableController.selected.description}" rows="4" autoResize="true" />
+                            </div>
 
                                 <!-- Due Date -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="dueDate" value="Due Date:" style="margin-top:10px;" />
-                                <p:calendar id="dueDate" value="#{contractKeyDatesMilestonesTableController.selectedItem.dueDate}" pattern="MM/dd/yyyy" required="true" showButtonPanel="true" navigator="true" />
+                                <p:datePicker id="dueDate"
+                                              value="#{contractKeyDatesMilestonesTableController.selected.dueDate}"
+                                              pattern="yyyy-MM-dd"
+                                              placeholder="Select date"
+                                              showIcon="true"
+                                              monthNavigator="true"
+                                              yearNavigator="true"
+                                              styleClass="w-full">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </p:datePicker>
+                            </div>
 
                                 <!-- Assigned Contact -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="assignedContactId" value="Assigned Contact:" style="margin-top:10px;" />
-                                <p:inputText id="assignedContactId" value="#{contractKeyDatesMilestonesTableController.selectedItem.assignedContactId}" />
+                                <p:inputText id="assignedContactId" value="#{contractKeyDatesMilestonesTableController.selected.assignedContactId}" />
+                            </div>
 
                                 <!-- Reminder Lead Days -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="reminderLeadDays" value="Reminder Lead Days:" style="margin-top:10px;" />
-                                <p:inputText id="reminderLeadDays" value="#{contractKeyDatesMilestonesTableController.selectedItem.reminderLeadDays}" />
+                                <p:inputNumber id="reminderLeadDays" value="#{contractKeyDatesMilestonesTableController.selected.reminderLeadDays}" />
+                            </div>
 
                                 <!-- Completed Date -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="completedDate" value="Completed Date:" style="margin-top:10px;" />
-                                <p:calendar id="completedDate" value="#{contractKeyDatesMilestonesTableController.selectedItem.completedDate}" pattern="MM/dd/yyyy" showButtonPanel="true" navigator="true" />
+                                <p:datePicker id="completedDate"
+                                              value="#{contractKeyDatesMilestonesTableController.selected.completedDate}"
+                                              pattern="yyyy-MM-dd"
+                                              placeholder="Select date"
+                                              showIcon="true"
+                                              monthNavigator="true"
+                                              yearNavigator="true"
+                                              styleClass="w-full">
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </p:datePicker>
+                            </div>
 
                                 <!-- Users Id -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="usersId" value="User ID:" style="margin-top:10px;" />
-                                <p:inputText id="usersId" value="#{contractKeyDatesMilestonesTableController.selectedItem.usersId}" />
+                                <p:inputText id="usersId" value="#{contractKeyDatesMilestonesTableController.selected.usersId}" />
+                            </div>
 
                                 <!-- Contract Id -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="contractId1" value="Contract ID:" style="margin-top:10px;" />
-                                <p:inputText id="contractId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.contractId}" />
+                                <p:selectOneMenu id="contractId1" value="#{contractKeyDatesMilestonesTableController.selected.contractId}">
+                                    <f:selectItem itemLabel="Select Party Type" itemValue="" />
+                                    <f:selectItems value="#{contractsTableController.items}" var="type"
+                                                   itemLabel="#{type.contractTitle}"
+                                                   itemValue="#{type.id}" />
+                                </p:selectOneMenu>
+                            </div>
 
                                 <!-- Status Id -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="statusId1" value="Status ID:" style="margin-top:10px;" />
-                                <p:inputText id="statusId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.statusId}" />
+                                <p:selectOneMenu id="statusId1" value="#{contractKeyDatesMilestonesTableController.selected.statusId}">
+                                    <f:selectItem itemLabel="Select Party Type" itemValue="" />
+                                    <f:selectItems value="#{contractsTableController.items}" var="type"
+                                                   itemLabel="#{type.contractTitle}"
+                                                   itemValue="#{type.id}" />
+                                </p:selectOneMenu>
+                            </div>
 
                                 <!-- Responsible Party Id -->
+                            <div class="field col-12 md:col-6">
                                 <p:outputLabel for="responsiblePartyId1" value="Responsible Party ID:" style="margin-top:10px;" />
-                                <p:inputText id="responsiblePartyId1" value="#{contractKeyDatesMilestonesTableController.selectedItem.responsiblePartyId}" />
+                                <p:selectOneMenu id="responsiblePartyId1" value="#{contractKeyDatesMilestonesTableController.selected.responsiblePartyId}">
+                                    <f:selectItem itemLabel="Select Party Type" itemValue="" />
+                                    <f:selectItems value="#{contractPartyRolesTableController.items}" var="type"
+                                                   itemLabel="#{type.contractTitle}"
+                                                   itemValue="#{type.id}" />
+                                </p:selectOneMenu>
+                            </div>
 
                                 <!-- Buttons -->
                                 <p:separator style="margin-top:20px; margin-bottom:20px;" />
-                                <p:commandButton value="Save" action="#{contractKeyDatesMilestonesTableController.save}" update=":growl, milestoneForm" icon="pi pi-check" />
-                                <p:commandButton value="Cancel" action="List.xhtml?faces-redirect=true" immediate="true" icon="pi pi-times" style="margin-left:10px;" />
+                                <p:commandButton value="Save" action="#{contractKeyDatesMilestonesTableController.save}" update="display" icon="pi pi-check" />
 
+                            </div>
                             </p:panel>
                         </p:card>
                         <p:divider/>

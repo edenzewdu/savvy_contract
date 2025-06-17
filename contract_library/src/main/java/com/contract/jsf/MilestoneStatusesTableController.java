@@ -206,7 +206,7 @@ public class MilestoneStatusesTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (MilestoneStatusesTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

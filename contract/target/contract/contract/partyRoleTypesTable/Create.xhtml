@@ -27,28 +27,24 @@
                         <br/>
                         <p:card>
                             <p:panel header="Create New Party Role Type">
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-                                <p:messages id="messages" autoUpdate="true" />
 
-                                <p:panelGrid columns="2" columnClasses="label,value" style="width:100%;">
+
+                                <!-- Role Name -->
+                                <div class="field col-12">
 
                                     <h:outputLabel for="roleName" value="Role Name:" />
                                     <p:inputText id="roleName" value="#{partyRoleTypesTableController.selected.roleName}"
                                                  required="true" label="Role Name" />
+                                </div>
 
-                                </p:panelGrid>
-
-                                <p:toolbar style="margin-top:1em;">
-                                    <p:toolbarGroup>
                                         <p:commandButton value="Save" icon="pi pi-check"
-                                                         action="#{partyRoleTypesTableController.create}"
-                                                         update=":growl,createForm"
-                                                         oncomplete="if (!args.validationFailed) window.history.back();" />
-                                        <p:commandButton value="Cancel" icon="pi pi-times" type="button"
-                                                         onclick="window.history.back()" />
-                                    </p:toolbarGroup>
-                                </p:toolbar>
+                                                         action="#{partyRoleTypesTableController.save()}"
+                                                         update="display">
 
+                                        </p:commandButton>
+                                </div>
                             </p:panel>
                         </p:card>
                         <p:divider/>

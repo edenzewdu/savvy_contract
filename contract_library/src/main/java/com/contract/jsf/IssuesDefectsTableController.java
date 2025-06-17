@@ -206,7 +206,7 @@ public class IssuesDefectsTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (IssuesDefectsTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

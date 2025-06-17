@@ -206,7 +206,7 @@ public class PartyTypesTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (PartyTypesTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

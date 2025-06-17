@@ -28,27 +28,21 @@
                         <p:card>
                             <p:panel header="Create New Party Type">
 
-                                <p:messages id="messages" autoUpdate="true" />
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-                                <p:panelGrid columns="2" columnClasses="label,value" style="width:100%;">
 
+
+                                <!-- Type Name -->
+                                <div class="field col-12">
                                     <h:outputLabel for="typeName" value="Type Name:" />
                                     <p:inputText id="typeName" value="#{partyTypesTableController.selected.typeName}"
                                                  required="true" label="Type Name" />
+                                </div>
 
-                                </p:panelGrid>
-
-                                <p:toolbar style="margin-top:1em;">
-                                    <p:toolbarGroup>
                                         <p:commandButton value="Save" icon="pi pi-check"
-                                                         action="#{partyTypesTableController.create}"
-                                                         update=":growl,createForm"
-                                                         oncomplete="if (!args.validationFailed) window.history.back();" />
-                                        <p:commandButton value="Cancel" icon="pi pi-times" type="button"
-                                                         onclick="window.history.back()" />
-                                    </p:toolbarGroup>
-                                </p:toolbar>
-
+                                                         action="#{partyTypesTableController.save()}"
+                                                         update="display" />
+                                </div>
                             </p:panel>
                         </p:card>
                         <p:divider/>

@@ -206,7 +206,7 @@ public class PaymentFrequenciesTableController implements Serializable {
     }
 
     public void save() {
-
+        getCreateItems().add(selected);
         for (PaymentFrequenciesTable item : getCreateItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);
