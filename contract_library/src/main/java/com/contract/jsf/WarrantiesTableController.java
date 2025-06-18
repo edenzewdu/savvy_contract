@@ -1,6 +1,8 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.WarrantiesTable;
+import com.contract.enums.WarrantyType;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.WarrantiesTableFacade;
@@ -19,6 +21,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("warrantiesTableController")
 @SessionScoped
@@ -28,12 +32,15 @@ public class WarrantiesTableController implements Serializable {
     private com.contract.session.WarrantiesTableFacade ejbFacade;
     @EJB
     private com.contract.session.AbstractFacadeQuerySavvy ejbFacade1;
+
+    private WarrantiesTable selectedWarranty = new WarrantiesTable();
+
     private List<WarrantiesTable> items = null;
     private List<WarrantiesTable> multiselectionItems = null;
     private List<WarrantiesTable> createItems = null;
     private List<WarrantiesTable> editItems = null;
     private List<WarrantiesTable> filteredValues = null;
-    private WarrantiesTable selected;
+    private WarrantiesTable selected = new WarrantiesTable();
     private WarrantiesTable selected1;
     private WarrantiesTable selected2 = new WarrantiesTable();
     private String dataName = "WarrantiesTable";
@@ -41,7 +48,17 @@ public class WarrantiesTableController implements Serializable {
 
     public WarrantiesTableController() {
     }
+    public WarrantiesTable getSelectedWarranty() {
+        return selectedWarranty;
+    }
 
+    public void setSelectedWarranty(WarrantiesTable selectedWarranty) {
+        this.selectedWarranty = selectedWarranty;
+    }
+
+    public WarrantyType[] getWarrantyTypes() {
+        return WarrantyType.values();
+    }
     public int getFirst() {
         return first;
     }
@@ -59,6 +76,10 @@ public class WarrantiesTableController implements Serializable {
     }
 
     public WarrantiesTable getSelected() {
+
+        if (selected == null) {
+            selected = new WarrantiesTable();
+        }
         return selected;
     }
 
@@ -206,21 +227,27 @@ public class WarrantiesTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (WarrantiesTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
+
+        try {
+            if (selected.getId() == null) {
+                getFacade().create(selected);
             } else {
-                getFacade().edit(item);
+                getFacade().edit(selected);
             }
-        }
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                JsfUtil.addSuccessMessage("Saved");
+            }
+        } catch (ConstraintViolationException e) {
+            for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+                System.out.println("Validation error in " + violation.getPropertyPath() + ": " + violation.getMessage());
+            }
+            throw e; // rethrow or handle
         }
     }
 
-    public void saveRow() {
+        public void saveRow() {
         for (WarrantiesTable item : getEditItems()) {
             if (item.getId() == null) {
                 getFacade().create(item);

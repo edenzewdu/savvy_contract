@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{contractKeyDatesMilestonesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{contractKeyDatesMilestonesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{contractKeyDatesMilestonesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{contractKeyDatesMilestonesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -61,7 +61,7 @@
                                 <!-- Assigned Contact -->
                             <div class="field col-12 md:col-6">
                                 <p:outputLabel for="assignedContactId" value="Assigned Contact:" style="margin-top:10px;" />
-                                <p:inputText id="assignedContactId" value="#{contractKeyDatesMilestonesTableController.selected.assignedContactId}" />
+                                <p:inputNumber id="assignedContactId" value="#{contractKeyDatesMilestonesTableController.selected.assignedContactId}" />
                             </div>
 
                                 <!-- Reminder Lead Days -->
@@ -98,7 +98,7 @@
                                     <f:selectItem itemLabel="Select Party Type" itemValue="" />
                                     <f:selectItems value="#{contractsTableController.items}" var="type"
                                                    itemLabel="#{type.contractTitle}"
-                                                   itemValue="#{type.id}" />
+                                                   itemValue="#{type}" />
                                 </p:selectOneMenu>
                             </div>
 
@@ -107,9 +107,9 @@
                                 <p:outputLabel for="statusId1" value="Status ID:" style="margin-top:10px;" />
                                 <p:selectOneMenu id="statusId1" value="#{contractKeyDatesMilestonesTableController.selected.statusId}">
                                     <f:selectItem itemLabel="Select Party Type" itemValue="" />
-                                    <f:selectItems value="#{contractsTableController.items}" var="type"
-                                                   itemLabel="#{type.contractTitle}"
-                                                   itemValue="#{type.id}" />
+                                    <f:selectItems value="#{milestoneStatusesTableController.items}" var="status"
+                                                   itemLabel="#{status.statusName}"
+                                                   itemValue="#{status}" />
                                 </p:selectOneMenu>
                             </div>
 
@@ -118,15 +118,11 @@
                                 <p:outputLabel for="responsiblePartyId1" value="Responsible Party ID:" style="margin-top:10px;" />
                                 <p:selectOneMenu id="responsiblePartyId1" value="#{contractKeyDatesMilestonesTableController.selected.responsiblePartyId}">
                                     <f:selectItem itemLabel="Select Party Type" itemValue="" />
-                                    <f:selectItems value="#{contractPartyRolesTableController.items}" var="type"
-                                                   itemLabel="#{type.contractTitle}"
-                                                   itemValue="#{type.id}" />
+                                    <f:selectItems value="#{contractPartyRolesTableController.items}" var="party"
+                                                   itemLabel="#{party.roleInContractId.roleName}"
+                                                   itemValue="#{party}" />
                                 </p:selectOneMenu>
                             </div>
-
-                                <!-- Buttons -->
-                                <p:separator style="margin-top:20px; margin-bottom:20px;" />
-                                <p:commandButton value="Save" action="#{contractKeyDatesMilestonesTableController.save}" update="display" icon="pi pi-check" />
 
                             </div>
                             </p:panel>
@@ -251,7 +247,7 @@
                                             <f:selectItems value="#{contractsTableController.itemsAvailableSelectOne}"
                                                            var="contractIdItem"
                                                            itemValue="#{contractIdItem}"
-                                                           itemLabel="#{contractIdItem.description}"/>
+                                                           itemLabel="#{contractIdItem.contractTitle}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>
@@ -267,7 +263,7 @@
                                             <f:selectItems value="#{milestoneStatusesTableController.itemsAvailableSelectOne}"
                                                            var="statusIdItem"
                                                            itemValue="#{statusIdItem}"
-                                                           itemLabel="#{statusIdItem.description}"/>
+                                                           itemLabel="#{statusIdItem.statusName}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>
@@ -283,7 +279,7 @@
                                             <f:selectItems value="#{contractPartyRolesTableController.itemsAvailableSelectOne}"
                                                            var="responsiblePartyIdItem"
                                                            itemValue="#{responsiblePartyIdItem}"
-                                                           itemLabel="#{responsiblePartyIdItem.description}"/>
+                                                           itemLabel="#{responsiblePartyIdItem.roleInContractId}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>

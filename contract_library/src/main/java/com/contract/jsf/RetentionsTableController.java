@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.RetentionsTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class RetentionsTableController implements Serializable {
     private List<RetentionsTable> createItems = null;
     private List<RetentionsTable> editItems = null;
     private List<RetentionsTable> filteredValues = null;
-    private RetentionsTable selected;
+    private RetentionsTable selected = new RetentionsTable();
     private RetentionsTable selected1;
     private RetentionsTable selected2 = new RetentionsTable();
     private String dataName = "RetentionsTable";
@@ -59,6 +60,10 @@ public class RetentionsTableController implements Serializable {
     }
 
     public RetentionsTable getSelected() {
+
+        if (selected == null) {
+            selected = new RetentionsTable();
+        }
         return selected;
     }
 

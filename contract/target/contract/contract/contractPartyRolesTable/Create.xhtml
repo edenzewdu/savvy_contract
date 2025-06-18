@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{contractPartyRolesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{contractPartyRolesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{contractPartyRolesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{contractPartyRolesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -28,27 +28,47 @@
                         <p:card>
                             <p:panel header="Create Contract Party Role">
 
-                                <h:panelGrid columns="2" cellpadding="5">
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-                                    <h:outputLabel for="isPrimaryCounterparty" value="Primary Counterparty:" />
-                                    <p:selectBooleanCheckbox id="isPrimaryCounterparty" value="#{contractPartyRolesTableController.selected.isPrimaryCounterparty}" />
+                                    <!-- Primary Counterparty -->
+                                    <div class="field col-12">
+                                        <h:outputLabel for="isPrimaryCounterparty" value="Primary Counterparty:" style="margin-right: 2%" />
+                                        <p:selectBooleanCheckbox id="isPrimaryCounterparty" value="#{contractPartyRolesTableController.selected.isPrimaryCounterparty}" />
+                                    </div>
 
-                                    <h:outputLabel for="contractId1" value="Contract ID:" />
-                                    <p:inputText id="contractId1" value="#{contractPartyRolesTableController.selected.contractId}" required="true" label="Contract ID" />
+                                    <!-- Contract ID -->
+                                    <div class="field col-12">
+                                        <p:outputLabel for="contractId1" value="Contract ID:" />
+                                        <p:selectOneMenu id="contractId1" value="#{contractPartyRolesTableController.selected.contractId}">
+                                            <f:selectItem itemLabel="Select Contract" itemValue="#{null}" />
+                                            <f:selectItems value="#{contractsTableController.items}" var="type"
+                                                           itemLabel="#{type.contractTitle}" itemValue="#{type}" />
+                                            <p:ajax listener="#{contractPartyRolesTableController.onContractOrPartyChange}" update="roleInContractId1" />
+                                        </p:selectOneMenu>
+                                    </div>
 
-                                    <h:outputLabel for="partyId1" value="Party ID:" />
-                                    <p:inputText id="partyId1" value="#{contractPartyRolesTableController.selected.partyId}" required="true" label="Party ID" />
+                                    <!-- Party ID -->
+                                    <div class="field col-12">
+                                        <p:outputLabel for="partyId1" value="Party ID:" />
+                                        <p:selectOneMenu id="partyId1" value="#{contractPartyRolesTableController.selected.partyId}">
+                                            <f:selectItem itemLabel="Select Party" itemValue="#{null}" />
+                                            <f:selectItems value="#{contractPartiesTableController.items}" var="party"
+                                                           itemLabel="#{party.legalName}" itemValue="#{type}" />
+                                            <p:ajax listener="#{contractPartyRolesTableController.onContractOrPartyChange}" update="roleInContractId1" />
+                                        </p:selectOneMenu>
+                                    </div>
 
-                                    <h:outputLabel for="roleInContractId1" value="Role In Contract ID:" />
-                                    <p:inputText id="roleInContractId1" value="#{contractPartyRolesTableController.selected.roleInContractId}" required="true" label="Role In Contract ID" />
+                                    <!-- Role In Contract ID -->
+                                    <div class="field col-12">
+                                        <p:outputLabel for="roleInContractId1" value="Role In Contract ID:" />
+                                        <p:selectOneMenu id="roleInContractId1" value="#{contractPartyRolesTableController.selected.roleInContractId}">
+                                            <f:selectItem itemLabel="Select Role Type" itemValue="#{null}" />
+                                            <f:selectItems value="#{partyRoleTypesTableController.items}" var="role"
+                                                           itemLabel="#{role.roleName}" itemValue="#{type}" />
+                                        </p:selectOneMenu>
+                                    </div>
 
-                                </h:panelGrid>
-
-                                <p:separator />
-
-                                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{contractPartyRolesTableController.save}" update=":growl" />
-                                <p:commandButton value="Cancel" icon="pi pi-times" immediate="true" action="ContractPartyRolesTableList.xhtml?faces-redirect=true" />
-
+                            </div>
                             </p:panel>
                         </p:card>
                         <p:divider/>
@@ -79,13 +99,14 @@
                             <p:column headerText="isPrimaryCounterparty">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <p:selectBooleanCheckbox value="#{contractPartyRolesTableController.selected.isPrimaryCounterparty}" disabled="true"/>
-
+                                        <p:selectBooleanCheckbox value="#{item.isPrimaryCounterparty}" disabled="true"/>
                                     </f:facet>
                                     <f:facet name="input">
+                                        <p:selectBooleanCheckbox value="#{item.isPrimaryCounterparty}"/>
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
+
 
                             <p:column headerText="contractId">
                                 <p:cellEditor>
@@ -97,7 +118,7 @@
                                             <f:selectItems value="#{contractsTableController.itemsAvailableSelectOne}"
                                                            var="contractIdItem"
                                                            itemValue="#{contractIdItem}"
-                                                           itemLabel="#{contractIdItem.description}"/>
+                                                           itemLabel="#{contractIdItem.contractTitle}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>
@@ -113,7 +134,7 @@
                                             <f:selectItems value="#{contractPartiesTableController.itemsAvailableSelectOne}"
                                                            var="partyIdItem"
                                                            itemValue="#{partyIdItem}"
-                                                           itemLabel="#{partyIdItem.description}"/>
+                                                           itemLabel="#{partyIdItem.legalName}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>
@@ -129,7 +150,7 @@
                                             <f:selectItems value="#{partyRoleTypesTableController.itemsAvailableSelectOne}"
                                                            var="roleInContractIdItem"
                                                            itemValue="#{roleInContractIdItem}"
-                                                           itemLabel="#{roleInContractIdItem.description}"/>
+                                                           itemLabel="#{roleInContractIdItem.roleName}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>

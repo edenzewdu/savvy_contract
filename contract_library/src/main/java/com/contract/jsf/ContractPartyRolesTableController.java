@@ -1,6 +1,9 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.ContractPartyRolesTable;
+import com.contract.entity.ContractsTable;
+import com.contract.entity.PartyRoleTypesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.ContractPartyRolesTableFacade;
@@ -33,7 +36,7 @@ public class ContractPartyRolesTableController implements Serializable {
     private List<ContractPartyRolesTable> createItems = null;
     private List<ContractPartyRolesTable> editItems = null;
     private List<ContractPartyRolesTable> filteredValues = null;
-    private ContractPartyRolesTable selected;
+    private ContractPartyRolesTable selected = new ContractPartyRolesTable();
     private ContractPartyRolesTable selected1;
     private ContractPartyRolesTable selected2 = new ContractPartyRolesTable();
     private String dataName = "ContractPartyRolesTable";
@@ -59,6 +62,10 @@ public class ContractPartyRolesTableController implements Serializable {
     }
 
     public ContractPartyRolesTable getSelected() {
+
+        if (selected == null) {
+            selected = new ContractPartyRolesTable();
+        }
         return selected;
     }
 
@@ -206,19 +213,51 @@ public class ContractPartyRolesTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (ContractPartyRolesTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
+
+            if (selected.getContractId() == null) {
+                JsfUtil.addErrorMessage("Contract ID is required.");
+                return;
             }
-        }
+            if (selected.getPartyId() == null) {
+                JsfUtil.addErrorMessage("Party ID is required.");
+                return;
+            }
+            if (selected.getRoleInContractId() == null) {
+                JsfUtil.addErrorMessage("Role In Contract ID is required.");
+                return;
+            }
+            // Save or update
+            if (selected.getId() == null) {
+                getFacade().create(selected);
+            } else {
+                getFacade().edit(selected);
+            }
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }
+    public void onContractOrPartyChange() {
+        if (selected.getContractId() != null && selected.getPartyId() != null) {
+            PartyRoleTypesTable determinedRole = findRoleByContractAndParty(selected.getContractId(), selected.getPartyId());
+            selected.setRoleInContractId(determinedRole);
+        }
+    }
+
+    public PartyRoleTypesTable findRoleByContractAndParty(ContractsTable contract, ContractPartiesTable party) {
+        try {
+            List<ContractPartyRolesTable> matchedRoles = getFacade().findByContractAndParty(contract, party);
+            if (!matchedRoles.isEmpty()) {
+                return matchedRoles.get(0).getRoleInContractId();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
     public void saveRow() {
         for (ContractPartyRolesTable item : getEditItems()) {

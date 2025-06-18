@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.ContractStatusesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class ContractStatusesTableController implements Serializable {
     private List<ContractStatusesTable> createItems = null;
     private List<ContractStatusesTable> editItems = null;
     private List<ContractStatusesTable> filteredValues = null;
-    private ContractStatusesTable selected;
+    private ContractStatusesTable selected = new ContractStatusesTable();
     private ContractStatusesTable selected1;
     private ContractStatusesTable selected2 = new ContractStatusesTable();
     private String dataName = "ContractStatusesTable";
@@ -59,6 +60,10 @@ public class ContractStatusesTableController implements Serializable {
     }
 
     public ContractStatusesTable getSelected() {
+
+        if (selected == null) {
+            selected = new ContractStatusesTable();
+        }
         return selected;
     }
 

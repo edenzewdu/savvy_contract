@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{partyTypesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{partyTypesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{partyTypesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{partyTypesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>

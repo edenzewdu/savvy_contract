@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.MilestoneStatusesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class MilestoneStatusesTableController implements Serializable {
     private List<MilestoneStatusesTable> createItems = null;
     private List<MilestoneStatusesTable> editItems = null;
     private List<MilestoneStatusesTable> filteredValues = null;
-    private MilestoneStatusesTable selected;
+    private MilestoneStatusesTable selected = new MilestoneStatusesTable();
     private MilestoneStatusesTable selected1;
     private MilestoneStatusesTable selected2 = new MilestoneStatusesTable();
     private String dataName = "MilestoneStatusesTable";
@@ -59,6 +60,10 @@ public class MilestoneStatusesTableController implements Serializable {
     }
 
     public MilestoneStatusesTable getSelected() {
+
+        if (selected == null) {
+            selected = new MilestoneStatusesTable();
+        }
         return selected;
     }
 

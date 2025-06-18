@@ -1,2 +1,5 @@
-package com.contract.enums;public class WarrantyType {
+package com.contract.enums;
+
+public enum WarrantyType {
+    Manufacturer, Extended, Service, Component
 }

@@ -1,5 +1,7 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
+import com.contract.entity.ContractsTable;
 import com.contract.entity.IssuesDefectsTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +35,7 @@ public class IssuesDefectsTableController implements Serializable {
     private List<IssuesDefectsTable> createItems = null;
     private List<IssuesDefectsTable> editItems = null;
     private List<IssuesDefectsTable> filteredValues = null;
-    private IssuesDefectsTable selected;
+    private IssuesDefectsTable selected = new IssuesDefectsTable();
     private IssuesDefectsTable selected1;
     private IssuesDefectsTable selected2 = new IssuesDefectsTable();
     private String dataName = "IssuesDefectsTable";
@@ -59,6 +61,10 @@ public class IssuesDefectsTableController implements Serializable {
     }
 
     public IssuesDefectsTable getSelected() {
+
+        if (selected == null) {
+            selected = new IssuesDefectsTable();
+        }
         return selected;
     }
 
@@ -206,14 +212,16 @@ public class IssuesDefectsTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (IssuesDefectsTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
-            }
+        if (selected == null || selected.getContractId() == 0) {
+            JsfUtil.addErrorMessage("Validation Error: Contract is required.");
+            return;
         }
+        if (selected.getId() == null) {
+            getFacade().create(selected);
+        } else {
+            getFacade().edit(selected);
+        }
+
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
             JsfUtil.addSuccessMessage("Saved");

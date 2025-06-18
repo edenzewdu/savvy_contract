@@ -33,7 +33,7 @@ public class ContractPartiesTableController implements Serializable {
     private List<ContractPartiesTable> createItems = null;
     private List<ContractPartiesTable> editItems = null;
     private List<ContractPartiesTable> filteredValues = null;
-    private ContractPartiesTable selected;
+    private ContractPartiesTable selected = new ContractPartiesTable();
     private ContractPartiesTable selected1;
     private ContractPartiesTable selected2 = new ContractPartiesTable();
     private String dataName = "ContractPartiesTable";
@@ -59,6 +59,9 @@ public class ContractPartiesTableController implements Serializable {
     }
 
     public ContractPartiesTable getSelected() {
+        if (selected == null) {
+            selected = new ContractPartiesTable();
+        }
         return selected;
     }
 
@@ -126,7 +129,6 @@ public class ContractPartiesTableController implements Serializable {
 
     public ContractPartiesTable prepareCreate() {
         createItems = new ArrayList<>();
-
         int tempid = 1;
 
         selected = new ContractPartiesTable();
@@ -215,7 +217,8 @@ public class ContractPartiesTableController implements Serializable {
             }
         }
         if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
+            items = null;
+            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }

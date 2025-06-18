@@ -1,6 +1,7 @@
 package com.contract.jsf;
 
 import com.contract.entity.ContractItemTable;
+import com.contract.entity.ContractPartiesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.ContractItemTableFacade;
@@ -34,7 +35,7 @@ public class ContractItemTableController implements Serializable {
     private List<ContractItemTable> createItems = null;
     private List<ContractItemTable> editItems = null;
     private List<ContractItemTable> filteredValues = null;
-    private ContractItemTable selected;
+    private ContractItemTable selected = new ContractItemTable();
     private ContractItemTable selected1;
     private ContractItemTable selected2 = new ContractItemTable();
     private String dataName = "ContractItemTable";
@@ -60,9 +61,11 @@ public class ContractItemTableController implements Serializable {
     }
 
     public ContractItemTable getSelected() {
+        if (selected == null) {
+            selected = new ContractItemTable();
+        }
         return selected;
     }
-
     public void setSelected(ContractItemTable selected) {
         this.selected = selected;
     }
@@ -207,16 +210,20 @@ public class ContractItemTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (ContractItemTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
-            }
+        if (selected == null || selected.getContractId() == null) {
+            JsfUtil.addErrorMessage("Validation Error: Contract is required.");
+            return;
         }
+        // Save or update
+        if (selected.getId() == null) {
+            getFacade().create(selected);
+        } else {
+            getFacade().edit(selected);
+        }
+
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }

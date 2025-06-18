@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.PartyRoleTypesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("partyRoleTypesTableController")
 @SessionScoped
@@ -33,7 +36,7 @@ public class PartyRoleTypesTableController implements Serializable {
     private List<PartyRoleTypesTable> createItems = null;
     private List<PartyRoleTypesTable> editItems = null;
     private List<PartyRoleTypesTable> filteredValues = null;
-    private PartyRoleTypesTable selected;
+    private PartyRoleTypesTable selected = new PartyRoleTypesTable();
     private PartyRoleTypesTable selected1;
     private PartyRoleTypesTable selected2 = new PartyRoleTypesTable();
     private String dataName = "PartyRoleTypesTable";
@@ -59,6 +62,10 @@ public class PartyRoleTypesTableController implements Serializable {
     }
 
     public PartyRoleTypesTable getSelected() {
+
+        if (selected == null) {
+            selected = new PartyRoleTypesTable();
+        }
         return selected;
     }
 
@@ -170,6 +177,12 @@ public class PartyRoleTypesTableController implements Serializable {
         return selected;
     }
 
+    public String goToPage() {
+        prepareCreate1();
+        return "/contract/contractsTable/List.xhtml?faces-redirect=true";
+    }
+
+
     public PartyRoleTypesTable prepareCreateInEdit() {
 
         selected1 = new PartyRoleTypesTable();
@@ -206,19 +219,44 @@ public class PartyRoleTypesTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (PartyRoleTypesTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
+        try {
+            // Null and empty check
+            if (selected == null || selected.getRoleName() == null || selected.getRoleName().trim().isEmpty()) {
+                JsfUtil.addErrorMessage("Validation Error: Role Name is required.");
+                return;
             }
-        }
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
+
+            // Uniqueness check
+            PartyRoleTypesTable existing = getFacade().findByRoleName(selected.getRoleName().trim());
+            if (existing != null && (selected.getId() == null || !existing.getId().equals(selected.getId()))) {
+                JsfUtil.addErrorMessage("Validation Error: Role Name must be unique.");
+                return;
+            }
+
+            // Save or update
+            if (selected.getId() == null) {
+                getFacade().create(selected);
+            } else {
+                getFacade().edit(selected);
+            }
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;
+                selected = null;
+                JsfUtil.addSuccessMessage("Saved");
+            }
+
+        } catch (ConstraintViolationException e) {
+            for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
+                System.out.println("Validation Error: " + violation.getPropertyPath() + " - " + violation.getMessage());
+                JsfUtil.addErrorMessage("Validation Error: " + violation.getPropertyPath() + " - " + violation.getMessage());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JsfUtil.addErrorMessage("Unexpected error: " + e.getMessage());
         }
     }
+
 
     public void saveRow() {
         for (PartyRoleTypesTable item : getEditItems()) {

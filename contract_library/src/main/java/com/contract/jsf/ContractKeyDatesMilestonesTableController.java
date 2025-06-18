@@ -1,6 +1,7 @@
 package com.contract.jsf;
 
 import com.contract.entity.ContractKeyDatesMilestonesTable;
+import com.contract.entity.ContractPartiesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.ContractKeyDatesMilestonesTableFacade;
@@ -33,7 +34,7 @@ public class ContractKeyDatesMilestonesTableController implements Serializable {
     private List<ContractKeyDatesMilestonesTable> createItems = null;
     private List<ContractKeyDatesMilestonesTable> editItems = null;
     private List<ContractKeyDatesMilestonesTable> filteredValues = null;
-    private ContractKeyDatesMilestonesTable selected;
+    private ContractKeyDatesMilestonesTable selected = new ContractKeyDatesMilestonesTable();
     private ContractKeyDatesMilestonesTable selected1;
     private ContractKeyDatesMilestonesTable selected2 = new ContractKeyDatesMilestonesTable();
     private String dataName = "ContractKeyDatesMilestonesTable";
@@ -59,7 +60,10 @@ public class ContractKeyDatesMilestonesTableController implements Serializable {
     }
 
     public ContractKeyDatesMilestonesTable getSelected() {
-        return selected;
+        if (selected == null) {
+                selected = new ContractKeyDatesMilestonesTable();
+            }
+            return selected;
     }
 
     public void setSelected(ContractKeyDatesMilestonesTable selected) {
@@ -206,16 +210,21 @@ public class ContractKeyDatesMilestonesTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (ContractKeyDatesMilestonesTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
-            }
+        if (selected == null || selected.getContractId() == null ) {
+            JsfUtil.addErrorMessage("Validation Error: Contract Should be Filled");
+            return;
         }
+
+        // Save or update
+        if (selected.getId() == null) {
+            getFacade().create(selected);
+        } else {
+            getFacade().edit(selected);
+        }
+
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }

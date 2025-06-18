@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.ContractsTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -63,6 +64,10 @@ public class ContractsTableController implements Serializable {
     }
 
     public ContractsTable getSelected() {
+
+        if (selected == null) {
+            selected = new ContractsTable();
+        }
         return selected;
     }
 
@@ -220,6 +225,19 @@ public class ContractsTableController implements Serializable {
     }
 
     public void save() {
+        // Check for duplicate contractTitle in createItems
+        for (ContractsTable item : getCreateItems()) {
+            if (item != selected && item.getContractTitle() != null && item.getContractTitle().equalsIgnoreCase(selected.getContractTitle())) {
+                JsfUtil.addErrorMessage("Duplicate contract title: " + selected.getContractTitle());
+                return; // Exit early to avoid saving
+            }
+        }
+
+    if (getFacade().existsByContractTitle(selected.getContractTitle())) {
+        JsfUtil.addErrorMessage("Contract with this title already exists in the system.");
+        return;
+    }
+
         getCreateItems().add(selected);
         for (ContractsTable item : getCreateItems()) {
             if (item.getId() == null) {
@@ -230,6 +248,7 @@ public class ContractsTableController implements Serializable {
         }
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
+            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }

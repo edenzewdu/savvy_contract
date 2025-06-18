@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{warrantiesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{warrantiesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{warrantiesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{warrantiesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -33,7 +33,6 @@
 
                                 <!-- Contract Id -->
                                 <div class="field col-12">
-
                                     <p:outputLabel for="contractId" value="Contract ID:" />
                                     <p:inputNumber id="contractId" value="#{warrantiesTableController.selected.contractId}" required="true" />
                                 </div>
@@ -59,7 +58,14 @@
                                 <!-- Warranty Type -->
                                 <div class="field col-12">
                                     <p:outputLabel for="warrantyType" value="Warranty Type:" />
-                                    <p:inputText id="warrantyType" value="#{warrantiesTableController.selected.warrantyType}" />
+                                    <p:selectOneMenu id="warrantyType"
+                                                     value="#{warrantiesTableController.selected.warrantyType}">
+                                        <f:selectItem itemLabel="-- Select Warranty Type --" itemValue="#{null}" />
+                                        <f:selectItems value="#{warrantiesTableController.warrantyTypes}"
+                                                       var="warranty"
+                                                       itemValue="#{warranty}"
+                                                       itemLabel="#{warranty}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Provider Party ID -->
@@ -125,9 +131,6 @@
                                     <p:inputText id="voidReason1" value="#{warrantiesTableController.selected.voidReason}" />
                                 </div>
 
-                                <p:separator />
-
-                                <p:commandButton value="Save" icon="pi pi-check" actionListener="#{warrantiesTableController.save()}" update="display" />
                                 </div>
                             </p:panel>
                         </p:card>
@@ -281,6 +284,8 @@
 
                                     </f:facet>
                                     <f:facet name="input">
+                                        <p:selectBooleanCheckbox value="#{warrantiesTableController.selected.isActive}" />
+
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>
@@ -292,6 +297,8 @@
 
                                     </f:facet>
                                     <f:facet name="input">
+                                        <p:selectBooleanCheckbox value="#{warrantiesTableController.selected.isVoided}"/>
+
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>

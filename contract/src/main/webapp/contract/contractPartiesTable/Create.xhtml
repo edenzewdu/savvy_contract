@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{contractPartiesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{contractPartiesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{contractPartiesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{contractPartiesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -33,7 +33,7 @@
                                 <!-- Legal Name -->
                                 <div class="field col-12">
                                     <p:outputLabel for="legalName1" value="Legal Name:" />
-                                    <p:inputTextarea id="legalName1" value="#{contractPartiesTableController.selected.legalName}" required="true" autoResize="true"/>
+                                    <p:inputTextarea id="legalName1" value="#{contractPartiesTableController.selected.legalName}" autoResize="true"/>
                                 </div>
 
                                 <!-- Short Name -->
@@ -49,7 +49,7 @@
                                         <f:selectItem itemLabel="Select Party Type" itemValue="" />
                                         <f:selectItems value="#{partyTypesTableController.items}" var="type"
                                                        itemLabel="#{type.typeName}"
-                                                       itemValue="#{type.id}" />
+                                                       itemValue="#{type}" />
                                     </p:selectOneMenu>
                                 </div>
 
@@ -65,15 +65,13 @@
                                     <p:inputText id="addressNumber" value="#{contractPartiesTableController.selected.addressNumberAb}" />
                                 </div>
 
-                                <!-- Submit -->
-                                <p:commandButton value="Submit" action="#{contractPartiesTableController.save}" update="@form" styleClass="p-mt-3" />
                                 </div>
                             </p:panel>
                         </p:card>
                         <p:divider/>
                         <p:dataTable id="datalist" value="#{contractPartiesTableController.createItems}" var="item"
                                      selectionMode="single" selection="#{contractPartiesTableController.selected}"
-                                     paginator="true" paginatorPosition="bottom" tableStyle="width:auto" 
+                                     paginator="true" paginatorPosition="bottom" tableStyle="width:auto"
                                      rowKey="#{item.id}" resizableColumns="true" resizeMode="expand"
                                      rows="10"  editable="true" editMode="cell" reflow="true" styleClass="ui-datatable-striped ui-datatable-sm ui-datatable-gridlines"
                                      rowsPerPageTemplate="10,20,30,40,50"

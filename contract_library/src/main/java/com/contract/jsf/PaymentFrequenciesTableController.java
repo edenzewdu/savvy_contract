@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.PaymentFrequenciesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class PaymentFrequenciesTableController implements Serializable {
     private List<PaymentFrequenciesTable> createItems = null;
     private List<PaymentFrequenciesTable> editItems = null;
     private List<PaymentFrequenciesTable> filteredValues = null;
-    private PaymentFrequenciesTable selected;
+    private PaymentFrequenciesTable selected = new PaymentFrequenciesTable();
     private PaymentFrequenciesTable selected1;
     private PaymentFrequenciesTable selected2 = new PaymentFrequenciesTable();
     private String dataName = "PaymentFrequenciesTable";
@@ -59,6 +60,10 @@ public class PaymentFrequenciesTableController implements Serializable {
     }
 
     public PaymentFrequenciesTable getSelected() {
+
+        if (selected == null) {
+            selected = new PaymentFrequenciesTable();
+        }
         return selected;
     }
 

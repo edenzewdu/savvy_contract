@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{issuesDefectsTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{issuesDefectsTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{issuesDefectsTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{issuesDefectsTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -134,12 +134,8 @@
                                 <!-- Client Acceptance Document Id -->
                                 <div class="field col-12 md:col-6">
                                     <h:outputLabel for="clientAcceptanceDocId" value="Client Acceptance Doc ID:" />
-                                    <p:selectOneMenu id="clientAcceptanceDocId" value="#{issuesDefectsTableController.selected.clientAcceptanceDocId}">
-                                        <f:selectItem itemLabel="Select Party Type" itemValue="" />
-                                        <f:selectItems value="#{contractsTableController.items}" var="type"
-                                                       itemLabel="#{type.contractTitle}"
-                                                       itemValue="#{type.id}" />
-                                    </p:selectOneMenu>
+                                    <p:inputNumber id="clientAcceptanceDocId" value="#{issuesDefectsTableController.selected.clientAcceptanceDocId}"/>
+
                                 </div>
 
                                 <!-- Warranty Id -->
@@ -147,13 +143,11 @@
                                     <h:outputLabel for="warrantyId1" value="Warranty ID:" />
                                     <p:selectOneMenu id="warrantyId1" value="#{issuesDefectsTableController.selected.warrantyId}">
                                         <f:selectItem itemLabel="Select Party Type" itemValue="" />
-                                        <f:selectItems value="#{warrantiesTableController.items}" var="type"
-                                                       itemLabel="#{type.contractTitle}"
-                                                       itemValue="#{type.id}" />
+                                        <f:selectItems value="#{warrantiesTableController.items}" var="warranty"
+                                                       itemLabel="#{warranty.warrantyType}"
+                                                       itemValue="#{warranty.id}" />
                                     </p:selectOneMenu>
-                                </div>>
-
-                                        <p:commandButton value="Save" icon="pi pi-check" actionListener="#{issuesDefectsTableController.save()}" update="display" oncomplete="if (!args.validationFailed) PF('createDialog').hide()" />
+                                </div>
 
                                 </div>
                             </p:panel>

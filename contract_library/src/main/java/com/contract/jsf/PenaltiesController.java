@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.Penalties;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class PenaltiesController implements Serializable {
     private List<Penalties> createItems = null;
     private List<Penalties> editItems = null;
     private List<Penalties> filteredValues = null;
-    private Penalties selected;
+    private Penalties selected = new Penalties();
     private Penalties selected1;
     private Penalties selected2 = new Penalties();
     private String dataName = "Penalties";
@@ -59,6 +60,10 @@ public class PenaltiesController implements Serializable {
     }
 
     public Penalties getSelected() {
+
+        if (selected == null) {
+            selected = new Penalties();
+        }
         return selected;
     }
 

@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.RebatesDiscountsTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class RebatesDiscountsTableController implements Serializable {
     private List<RebatesDiscountsTable> createItems = null;
     private List<RebatesDiscountsTable> editItems = null;
     private List<RebatesDiscountsTable> filteredValues = null;
-    private RebatesDiscountsTable selected;
+    private RebatesDiscountsTable selected = new RebatesDiscountsTable();
     private RebatesDiscountsTable selected1;
     private RebatesDiscountsTable selected2 = new RebatesDiscountsTable();
     private String dataName = "RebatesDiscountsTable";
@@ -59,6 +60,10 @@ public class RebatesDiscountsTableController implements Serializable {
     }
 
     public RebatesDiscountsTable getSelected() {
+
+        if (selected == null) {
+            selected = new RebatesDiscountsTable();
+        }
         return selected;
     }
 

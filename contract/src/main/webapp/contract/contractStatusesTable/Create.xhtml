@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{contractStatusesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{contractStatusesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{contractStatusesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{contractStatusesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -43,10 +43,7 @@
                                     <p:inputTextarea id="description1" value="#{contractStatusesTableController.selected.description}" rows="4" cols="30" autoResize="true" />
                                 </div>
 
-                                <p:separator />
-
-                                        <p:commandButton value="Save" icon="pi pi-check" action="#{contractStatusesTableController.save}" update="display" />
-                            </div>
+                                </div>
 
                             </p:panel>
                         </p:card>

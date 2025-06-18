@@ -1,5 +1,6 @@
 package com.contract.jsf;
 
+import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.PartyTypesTable;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
@@ -33,7 +34,7 @@ public class PartyTypesTableController implements Serializable {
     private List<PartyTypesTable> createItems = null;
     private List<PartyTypesTable> editItems = null;
     private List<PartyTypesTable> filteredValues = null;
-    private PartyTypesTable selected;
+    private PartyTypesTable selected = new PartyTypesTable();
     private PartyTypesTable selected1;
     private PartyTypesTable selected2 = new PartyTypesTable();
     private String dataName = "PartyTypesTable";
@@ -59,6 +60,10 @@ public class PartyTypesTableController implements Serializable {
     }
 
     public PartyTypesTable getSelected() {
+
+        if (selected == null) {
+            selected = new PartyTypesTable();
+        }
         return selected;
     }
 

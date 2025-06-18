@@ -19,7 +19,7 @@
                     <h:panelGroup id="display">
                         <p:toolbar>
                             <p:toolbarGroup>
-                                <p:commandButton actionListener="#{partyRoleTypesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display"/>
+                                <p:commandButton action="#{partyRoleTypesTableController.save}"   icon="pi pi-check" styleClass="p-mr-2 p-mb-2" value="Save" update="display" ajax="false"/>
                                 <p:commandButton actionListener="#{partyRoleTypesTableController.cancelCreate}" value="Cancel"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                                 <p:commandButton actionListener="#{partyRoleTypesTableController.discard}" value="Discard"  icon="pi pi-times" styleClass="p-mr-2 p-mb-2" action="List.xhtml?faces-redirect=true"/>
                             </p:toolbarGroup>
@@ -29,21 +29,16 @@
                             <p:panel header="Create New Party Role Type">
                                 <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
-
-
                                 <!-- Role Name -->
                                 <div class="field col-12">
-
                                     <h:outputLabel for="roleName" value="Role Name:" />
                                     <p:inputText id="roleName" value="#{partyRoleTypesTableController.selected.roleName}"
-                                                 required="true" label="Role Name" />
+                                                 required="true" label="Role Name">
+                                        <f:validateLength minimum="1" maximum="100"/>
+                                    </p:inputText>
+
                                 </div>
 
-                                        <p:commandButton value="Save" icon="pi pi-check"
-                                                         action="#{partyRoleTypesTableController.save()}"
-                                                         update="display">
-
-                                        </p:commandButton>
                                 </div>
                             </p:panel>
                         </p:card>

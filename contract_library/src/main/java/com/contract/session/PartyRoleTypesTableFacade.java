@@ -7,6 +7,7 @@ package com.contract.session;
 import com.contract.entity.PartyRoleTypesTable;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
 /**
@@ -27,5 +28,15 @@ public class PartyRoleTypesTableFacade extends AbstractFacadeSavvy<PartyRoleType
     public PartyRoleTypesTableFacade() {
         super(PartyRoleTypesTable.class);
     }
-    
+    public PartyRoleTypesTable findByRoleName(String roleName) {
+        try {
+            return em.createNamedQuery("PartyRoleTypesTable.findByRoleName", PartyRoleTypesTable.class)
+                    .setParameter("roleName", roleName)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+
+
 }

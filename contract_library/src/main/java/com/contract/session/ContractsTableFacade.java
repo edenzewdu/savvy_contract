@@ -27,5 +27,19 @@ public class ContractsTableFacade extends AbstractFacadeSavvy<ContractsTable> {
     public ContractsTableFacade() {
         super(ContractsTable.class);
     }
-    
+    public boolean existsByContractTitle(String contractTitle) {
+        try {
+            Long count = em.createQuery(
+                            "SELECT COUNT(c) FROM ContractsTable c WHERE LOWER(c.contractTitle) = :title", Long.class)
+                    .setParameter("title", contractTitle.toLowerCase())
+                    .getSingleResult();
+
+            return count > 0;
+        } catch (Exception e) {
+            // Optionally log the error
+            return false;
+        }
+    }
+
+
 }
