@@ -6,19 +6,11 @@ package com.contract.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
+import com.contract.enums.*;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -55,21 +47,15 @@ public class RebatesDiscountsTable implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @NotNull
-    @Column(name = "contract_id")
-    private int contractId;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 22)
     @Column(name = "rebate_type")
-    private String rebateType;
-    @Basic(optional = false)
+    private RebateType rebateType;
+    @Enumerated(EnumType.STRING)
     @NotNull
-    @Size(min = 1, max = 12)
     @Column(name = "calculation_basis")
-    private String calculationBasis;
-    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    private CalculationBasis calculationBasis;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "value_param")
@@ -83,9 +69,11 @@ public class RebatesDiscountsTable implements Serializable {
     @Size(min = 1, max = 65535)
     @Column(name = "condition_text")
     private String conditionText;
-    @Size(max = 18)
+    @Enumerated(EnumType.STRING)
+    @NotNull
     @Column(name = "tracking_metric_type")
-    private String trackingMetricType;
+    private TrackingMetricType trackingMetricType;
+
     @Column(name = "target_value_metric")
     private BigDecimal targetValueMetric;
     @Column(name = "current_value_metric")
@@ -100,29 +88,27 @@ public class RebatesDiscountsTable implements Serializable {
     private BigDecimal estimatedRebateAmount;
     @Column(name = "actual_rebate_amount")
     private BigDecimal actualRebateAmount;
-    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @NotNull
-    @Size(min = 1, max = 8)
     @Column(name = "status")
-    private String status;
+    private RebateStatus status;
     @Column(name = "applied_to_payment_id")
     private Integer appliedToPaymentId;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
     
     @jakarta.persistence.Transient
     private Integer tempId;
     @jakarta.persistence.Transient
     private Boolean validCell = false;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
 
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Timestamp updatedAt;
+
+    @ManyToOne(optional = false)
+    @NotNull
+    @JoinColumn(name = "contract_id", referencedColumnName = "id")
+    private ContractsTable contractId;
     public Integer getTempId() {
         return tempId;
     }
@@ -146,7 +132,7 @@ public class RebatesDiscountsTable implements Serializable {
         this.id = id;
     }
 
-    public RebatesDiscountsTable(Integer id, int contractId, String rebateType, String calculationBasis, BigDecimal valueParam, String conditionText, String status, Date createdAt, Date updatedAt) {
+    public RebatesDiscountsTable(Integer id, ContractsTable contractId, RebateType rebateType, CalculationBasis calculationBasis, BigDecimal valueParam, String conditionText, RebateStatus status) {
         this.id = id;
         this.contractId = contractId;
         this.rebateType = rebateType;
@@ -154,8 +140,6 @@ public class RebatesDiscountsTable implements Serializable {
         this.valueParam = valueParam;
         this.conditionText = conditionText;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -166,27 +150,27 @@ public class RebatesDiscountsTable implements Serializable {
         this.id = id;
     }
 
-    public int getContractId() {
+    public ContractsTable getContractId() {
         return contractId;
     }
 
-    public void setContractId(int contractId) {
+    public void setContractId(ContractsTable contractId) {
         this.contractId = contractId;
     }
 
-    public String getRebateType() {
+    public RebateType getRebateType() {
         return rebateType;
     }
 
-    public void setRebateType(String rebateType) {
+    public void setRebateType(RebateType rebateType) {
         this.rebateType = rebateType;
     }
 
-    public String getCalculationBasis() {
+    public CalculationBasis getCalculationBasis() {
         return calculationBasis;
     }
 
-    public void setCalculationBasis(String calculationBasis) {
+    public void setCalculationBasis(CalculationBasis calculationBasis) {
         this.calculationBasis = calculationBasis;
     }
 
@@ -214,11 +198,11 @@ public class RebatesDiscountsTable implements Serializable {
         this.conditionText = conditionText;
     }
 
-    public String getTrackingMetricType() {
+    public TrackingMetricType getTrackingMetricType() {
         return trackingMetricType;
     }
 
-    public void setTrackingMetricType(String trackingMetricType) {
+    public void setTrackingMetricType(TrackingMetricType trackingMetricType) {
         this.trackingMetricType = trackingMetricType;
     }
 
@@ -270,11 +254,11 @@ public class RebatesDiscountsTable implements Serializable {
         this.actualRebateAmount = actualRebateAmount;
     }
 
-    public String getStatus() {
+    public RebateStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RebateStatus status) {
         this.status = status;
     }
 
@@ -290,7 +274,7 @@ public class RebatesDiscountsTable implements Serializable {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -298,7 +282,7 @@ public class RebatesDiscountsTable implements Serializable {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 

@@ -6,19 +6,12 @@ package com.contract.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
+import com.contract.enums.RetentionStatus;
+import com.contract.enums.WarrantyType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -50,10 +43,6 @@ public class RetentionsTable implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "contract_id")
-    private int contractId;
     @Size(max = 255)
     @Column(name = "retention_reason")
     private String retentionReason;
@@ -61,7 +50,6 @@ public class RetentionsTable implements Serializable {
     @Column(name = "retained_percentage_applied")
     private BigDecimal retainedPercentageApplied;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "initial_retained_amount")
     private BigDecimal initialRetainedAmount;
     @Size(max = 5)
@@ -69,11 +57,10 @@ public class RetentionsTable implements Serializable {
     private String currency;
     @Column(name = "amount_released_so_far")
     private BigDecimal amountReleasedSoFar;
-    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @NotNull
-    @Size(min = 1, max = 18)
     @Column(name = "status")
-    private String status;
+    private RetentionStatus status;
     @Lob
     @Size(max = 65535)
     @Column(name = "release_condition_description")
@@ -88,17 +75,16 @@ public class RetentionsTable implements Serializable {
     @Size(max = 65535)
     @Column(name = "notes")
     private String notes;
-    @Basic(optional = false)
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Timestamp updatedAt;
+
+    @ManyToOne(optional = false)
     @NotNull
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    
+    @JoinColumn(name = "contract_id", referencedColumnName = "id")
+    private ContractsTable contractId;
     @jakarta.persistence.Transient
     private Integer tempId;
     @jakarta.persistence.Transient
@@ -127,13 +113,11 @@ public class RetentionsTable implements Serializable {
         this.id = id;
     }
 
-    public RetentionsTable(Integer id, int contractId, BigDecimal initialRetainedAmount, String status, Date createdAt, Date updatedAt) {
+    public RetentionsTable(Integer id, ContractsTable contractId, BigDecimal initialRetainedAmount, RetentionStatus status, Date createdAt, Date updatedAt) {
         this.id = id;
         this.contractId = contractId;
         this.initialRetainedAmount = initialRetainedAmount;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -144,11 +128,11 @@ public class RetentionsTable implements Serializable {
         this.id = id;
     }
 
-    public int getContractId() {
+    public ContractsTable getContractId() {
         return contractId;
     }
 
-    public void setContractId(int contractId) {
+    public void setContractId(ContractsTable contractId) {
         this.contractId = contractId;
     }
 
@@ -192,11 +176,11 @@ public class RetentionsTable implements Serializable {
         this.amountReleasedSoFar = amountReleasedSoFar;
     }
 
-    public String getStatus() {
+    public RetentionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(RetentionStatus status) {
         this.status = status;
     }
 
@@ -236,7 +220,7 @@ public class RetentionsTable implements Serializable {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -244,7 +228,7 @@ public class RetentionsTable implements Serializable {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 

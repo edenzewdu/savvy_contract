@@ -34,7 +34,14 @@
                                 <!-- Contract Id -->
                                 <div class="field col-12">
                                     <h:outputLabel for="contractId" value="Contract ID:"/>
-                                    <p:inputText id="contractId" value="#{retentionsTableController.selected.contractId}" required="true"/>
+                                    <p:selectOneMenu id="contractId"
+                                                     value="#{retentionsTableController.selected.contractId}">
+                                        <f:selectItem itemLabel="-- Select Contract --" itemValue="#{null}" />
+                                        <f:selectItems value="#{contractsTableController.items}"
+                                                       var="contract"
+                                                       itemValue="#{contract}"
+                                                       itemLabel="#{contract.contractTitle}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Retention Reason -->
@@ -58,7 +65,14 @@
                                 <!-- Currency -->
                                 <div class="field col-12">
                                     <h:outputLabel for="currency" value="Currency:"/>
-                                    <p:inputText id="currency" value="#{retentionsTableController.selected.currency}" required="true"/>
+                                    <p:selectOneMenu id="currency"
+                                                     value="#{retentionsTableController.selected.currency}"
+                                                     styleClass="w-full">
+                                        <f:selectItem itemLabel="Select" itemValue="" noSelectionOption="true" />
+                                        <f:selectItem itemLabel="ETB" itemValue="ETB" />
+                                        <f:selectItem itemLabel="USD" itemValue="USD" />
+                                        <f:selectItem itemLabel="EUR" itemValue="EUR" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Amount Released So Far -->
@@ -70,7 +84,13 @@
                                 <!-- Status -->
                                 <div class="field col-12">
                                     <h:outputLabel for="status" value="Status:"/>
-                                    <p:inputText id="status" value="#{retentionsTableController.selected.status}"/>
+                                    <p:selectOneMenu id="status" value="#{retentionsTableController.selected.status}">
+                                    <f:selectItem itemLabel="-- Select Status --" itemValue="#{null}" />
+                                    <f:selectItems value="#{retentionsTableController.status}"
+                                                   var="status"
+                                                   itemValue="#{status}"
+                                                   itemLabel="#{status}" />
+                                </p:selectOneMenu>
                                 </div>
 
                                 <!-- Release Condition Description -->
@@ -114,41 +134,6 @@
                                     <h:outputLabel for="notes1" value="Notes:"/>
                                     <p:inputTextarea id="notes1" value="#{retentionsTableController.selected.notes}" rows="3"/>
                                 </div>
-
-                                <!-- CreatedAt -->
-                                <div class="field col-12 md:col-6">
-                                    <h:outputLabel for="createdAt" value="Created At:"/>
-                                    <p:datePicker id="createdAt"
-                                                  value="#{retentionsTableController.selected.createdAt}"
-                                                  pattern="yyyy-MM-dd"
-                                                  placeholder="Select date"
-                                                  showIcon="true"
-                                                  monthNavigator="true"
-                                                  yearNavigator="true"
-                                                  styleClass="w-full">
-                                        <f:convertDateTime pattern="yyyy-MM-dd" />
-                                    </p:datePicker>
-                                </div>
-
-                                <!-- Updated At -->
-                                <div class="field col-12 md:col-6">
-                                    <h:outputLabel for="updatedAt" value="Updated At:"/>
-                                    <p:datePicker id="updatedAt"
-                                                  value="#{retentionsTableController.selected.updatedAt}"
-                                                  pattern="yyyy-MM-dd"
-                                                  placeholder="Select date"
-                                                  showIcon="true"
-                                                  monthNavigator="true"
-                                                  yearNavigator="true"
-                                                  styleClass="w-full">
-                                        <f:convertDateTime pattern="yyyy-MM-dd" />
-                                    </p:datePicker>
-                                </div>
-
-
-                                <p:separator/>
-
-                                <p:commandButton value="Save" action="#{retentionsTableController.save()}" icon="pi pi-check" update="display" styleClass="p-mt-3"/>
 
                                 </div>
                             </p:panel>

@@ -2,17 +2,20 @@ package com.contract.jsf;
 
 import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.RebatesDiscountsTable;
+import com.contract.enums.*;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.RebatesDiscountsTableFacade;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
@@ -20,6 +23,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("rebatesDiscountsTableController")
 @SessionScoped
@@ -59,6 +64,18 @@ public class RebatesDiscountsTableController implements Serializable {
         this.dataName = dataName;
     }
 
+    public RebateStatus[] getRebateStatus() {
+        return RebateStatus.values();
+    }
+    public RebateType[] getRebateType() {
+        return RebateType.values();
+    }
+    public CalculationBasis[] getCalculationBasis() {
+        return CalculationBasis.values();
+    }
+    public TrackingMetricType[] getTrackingMetricType() {
+        return TrackingMetricType.values();
+    }
     public RebatesDiscountsTable getSelected() {
 
         if (selected == null) {
@@ -211,19 +228,116 @@ public class RebatesDiscountsTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (RebatesDiscountsTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
+        try {
+            BigDecimal max = new BigDecimal("9999999999999999.99");
+            BigDecimal min = BigDecimal.ZERO;
+
+            // Validate valueParam
+            if (selected.getValueParam() == null || selected.getValueParam().compareTo(min) < 0 || selected.getValueParam().compareTo(max) > 0) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Value Param must be between 0.00 and 9999999999999999.99", null));
+                return;
             }
-        }
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
+
+            // Validate actualRebateAmount
+            if (selected.getActualRebateAmount() != null &&
+                    (selected.getActualRebateAmount().compareTo(min) < 0 || selected.getActualRebateAmount().compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Actual Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                return;
+            }
+
+            // Validate currentValueMetric
+            if (selected.getCurrentValueMetric() != null &&
+                    (selected.getCurrentValueMetric().compareTo(min) < 0 || selected.getCurrentValueMetric().compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Current Value Metric must be between 0.00 and 9999999999999999.99", null));
+                return;
+            }
+
+            // Validate estimatedRebateAmount
+            if (selected.getEstimatedRebateAmount() != null &&
+                    (selected.getEstimatedRebateAmount().compareTo(min) < 0 || selected.getEstimatedRebateAmount().compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Estimated Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                return;
+            }
+
+            // Validate targetValueMetric
+            if (selected.getTargetValueMetric() != null &&
+                    (selected.getTargetValueMetric().compareTo(min) < 0 || selected.getTargetValueMetric().compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Target Value Metric must be between 0.00 and 9999999999999999.99", null));
+                return;
+            }
+
+            // Validate required fields
+            if (selected.getStatus() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Status is required.", null));
+                return;
+            }
+
+            if (selected.getContractId() == null || selected.getContractId().getId() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Contract must be selected.", null));
+                return;
+            }
+
+            if (selected.getRebateType() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Rebate Type is required.", null));
+                return;
+            }
+
+            if (selected.getCalculationBasis() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Calculation Basis is required.", null));
+                return;
+            }
+
+            if (selected.getConditionText() == null || selected.getConditionText().trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Condition Text is required.", null));
+                return;
+            }
+
+            // Save or update
+            if (selected.getId() == null) {
+                getFacade().create(selected);
+            } else {
+                getFacade().edit(selected);
+            }
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null; // refresh list
+                JsfUtil.addSuccessMessage("Saved successfully.");
+            }
+
+        } catch (ConstraintViolationException e) {
+            for (ConstraintViolation<?> v : e.getConstraintViolations()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                v.getPropertyPath() + ": " + v.getMessage(), null));
+            }
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error: " + e.getMessage(), null));
         }
     }
+
+
 
     public void saveRow() {
         for (RebatesDiscountsTable item : getEditItems()) {

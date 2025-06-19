@@ -84,11 +84,11 @@
                             </f:facet>
                             <h:outputText value="#{item.id}"/>
                         </p:column>
-                        <p:column  sortBy="#{item.contractId}"  filterBy="#{item.contractId}" filterMatchMode="contains">
+                        <p:column  sortBy="#{item.contract.contractTitle}"  filterBy="#{item.contract.contractTitle}" filterMatchMode="contains">
                             <f:facet name="header">
                                 <h:outputText value="contractId"/>
                             </f:facet>
-                            <h:outputText value="#{item.contractId}"/>
+                            <h:outputText value="#{item.contract.contractTitle}"/>
                         </p:column>
                         <p:column  sortBy="#{item.warrantedItemDescription}"  filterBy="#{item.warrantedItemDescription}" filterMatchMode="contains">
                             <f:facet name="header">

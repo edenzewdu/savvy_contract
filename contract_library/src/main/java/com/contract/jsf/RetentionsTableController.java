@@ -2,17 +2,22 @@ package com.contract.jsf;
 
 import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.RetentionsTable;
+import com.contract.entity.WarrantiesTable;
+import com.contract.enums.RetentionStatus;
+import com.contract.enums.WarrantyType;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.RetentionsTableFacade;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
@@ -20,6 +25,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("retentionsTableController")
 @SessionScoped
@@ -29,6 +36,7 @@ public class RetentionsTableController implements Serializable {
     private com.contract.session.RetentionsTableFacade ejbFacade;
     @EJB
     private com.contract.session.AbstractFacadeQuerySavvy ejbFacade1;
+    private RetentionsTable selectedRetention = new RetentionsTable();
     private List<RetentionsTable> items = null;
     private List<RetentionsTable> multiselectionItems = null;
     private List<RetentionsTable> createItems = null;
@@ -57,6 +65,18 @@ public class RetentionsTableController implements Serializable {
 
     public void setDataName(final String dataName) {
         this.dataName = dataName;
+    }
+
+    public RetentionsTable getSelectedRetention() {
+        return selectedRetention;
+    }
+
+    public void setSelectedRetention(RetentionsTable selectedRetention) {
+        this.selectedRetention = selectedRetention;
+    }
+
+    public RetentionStatus[] getStatus() {
+        return RetentionStatus.values();
     }
 
     public RetentionsTable getSelected() {
@@ -211,14 +231,30 @@ public class RetentionsTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (RetentionsTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
+        try {
+            BigDecimal percentage = selected.getRetainedPercentageApplied();
+            if (percentage != null && (percentage.compareTo(new BigDecimal("999.99")) > 0 || percentage.compareTo(BigDecimal.ZERO) < 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Retained Percentage must be between 0.00 and 999.99", null));
+                return; // stop save
             }
+            if (selected == null || selected.getContractId() == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Contract is required.", null));
+                return; // stop save
+            }
+            if (selected.getId() == null) {
+                getFacade().create(selected);
+            } else {
+                getFacade().edit(selected);
+            }
+        } catch (ConstraintViolationException e) {
+        for (ConstraintViolation<?> v : e.getConstraintViolations()) {
+            System.out.println(v.getPropertyPath() + " " + v.getMessage());
         }
+    }
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
             JsfUtil.addSuccessMessage("Saved");

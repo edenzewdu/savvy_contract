@@ -34,7 +34,14 @@
                                 <!-- Contract Id -->
                                 <div class="field col-12">
                                     <h:outputLabel for="contractId" value="Contract ID"/>
-                                    <p:inputText id="contractId" value="#{penaltiesController.selected.contractId}" required="true"/>
+                                    <p:selectOneMenu id="contractId"
+                                                     value="#{penaltiesController.selected.contractId}">
+                                        <f:selectItem itemLabel="-- Select Contract --" itemValue="#{null}" />
+                                        <f:selectItems value="#{contractsTableController.items}"
+                                                       var="contract"
+                                                       itemValue="#{contract}"
+                                                       itemLabel="#{contract.contractTitle}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Breach Type -->
@@ -91,7 +98,14 @@
                                 <!-- Status -->
                                 <div class="field col-12 md:col-6">
                                     <h:outputLabel for="status" value="Status"/>
-                                    <p:inputText id="status" value="#{penaltiesController.selected.status}"/>
+                                    <p:selectOneMenu id="status"
+                                                     value="#{penaltiesController.selected.status}">
+                                        <f:selectItem itemLabel="-- Select Contract --" itemValue="#{null}" />
+                                        <f:selectItems value="#{penaltiesController.penaltiesStatus}"
+                                                       var="status"
+                                                       itemValue="#{status}"
+                                                       itemLabel="#{status}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Resolution Date -->
@@ -127,10 +141,6 @@
                                     <p:inputText id="proofDocumentId" value="#{penaltiesController.selected.proofDocumentId}"/>
                                 </div>
 
-                                <p:separator/>
-                                <p:commandButton value="Save" icon="pi pi-check"
-                                                 action="#{penaltiesController.save()}"
-                                                 update="display"/>
                                 </div>
                             </p:panel>
                         </p:card>

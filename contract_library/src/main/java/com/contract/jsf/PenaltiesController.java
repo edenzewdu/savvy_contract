@@ -2,6 +2,8 @@ package com.contract.jsf;
 
 import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.Penalties;
+import com.contract.enums.PenaltiesStatus;
+import com.contract.enums.WarrantyType;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.PenaltiesFacade;
@@ -13,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
@@ -20,6 +23,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("penaltiesController")
 @SessionScoped
@@ -43,6 +48,9 @@ public class PenaltiesController implements Serializable {
     public PenaltiesController() {
     }
 
+    public PenaltiesStatus[] getPenaltiesStatus() {
+        return PenaltiesStatus.values();
+    }
     public int getFirst() {
         return first;
     }
@@ -211,19 +219,33 @@ public class PenaltiesController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (Penalties item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
+        try{
+            // Save or update
+            if (selected.getId() == null) {
+                getFacade().create(selected);
             } else {
-                getFacade().edit(item);
+                getFacade().edit(selected);
             }
-        }
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null; // refresh list
+                JsfUtil.addSuccessMessage("Saved successfully.");
+            }
+
+        } catch (ConstraintViolationException e) {
+            for (ConstraintViolation<?> v : e.getConstraintViolations()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                v.getPropertyPath() + ": " + v.getMessage(), null));
+            }
+        } catch (Exception e) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Error: " + e.getMessage(), null));
         }
     }
+
+
 
     public void saveRow() {
         for (Penalties item : getEditItems()) {

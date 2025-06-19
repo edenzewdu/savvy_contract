@@ -1,6 +1,5 @@
 package com.contract.jsf;
 
-import com.contract.entity.ContractPartiesTable;
 import com.contract.entity.WarrantiesTable;
 import com.contract.enums.WarrantyType;
 import com.contract.jsf.util.JsfUtil;
@@ -237,13 +236,26 @@ public class WarrantiesTableController implements Serializable {
 
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
+                selected = null;
                 JsfUtil.addSuccessMessage("Saved");
             }
-        } catch (ConstraintViolationException e) {
-            for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
-                System.out.println("Validation error in " + violation.getPropertyPath() + ": " + violation.getMessage());
+        }  catch (EJBException ejbEx) {
+            Throwable cause = ejbEx.getCause();
+            while (cause != null) {
+                if (cause instanceof ConstraintViolationException) {
+                    ConstraintViolationException cve = (ConstraintViolationException) cause;
+                    for (ConstraintViolation<?> violation : cve.getConstraintViolations()) {
+                        System.out.println("Validation error in " + violation.getPropertyPath() + ": " + violation.getMessage());
+                    }
+                    break;
+                }
+                cause = cause.getCause();
             }
-            throw e; // rethrow or handle
+            // Optional: rethrow or show error message
+            JsfUtil.addErrorMessage("Validation failed: check server log for details.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JsfUtil.addErrorMessage("Save failed: " + ex.getMessage());
         }
     }
 

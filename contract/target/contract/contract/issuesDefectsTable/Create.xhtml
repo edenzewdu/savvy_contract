@@ -35,7 +35,14 @@
                                 <!-- Contract ID -->
                                 <div class="field col-12">
                                     <h:outputLabel for="contractId" value="Contract ID:" />
-                                    <p:inputNumber id="contractId" value="#{issuesDefectsTableController.selected.contractId}" required="true" label="Contract ID" />
+                                    <p:selectOneMenu id="contractId"
+                                                     value="#{issuesDefectsTableController.selected.contractId}">
+                                        <f:selectItem itemLabel="-- Select Contract --" itemValue="#{null}" />
+                                        <f:selectItems value="#{contractsTableController.items}"
+                                                       var="contract"
+                                                       itemValue="#{contract}"
+                                                       itemLabel="#{contract.contractTitle}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!--Issue Category -->
@@ -53,7 +60,14 @@
                                 <!-- Reported By Party Id -->
                                 <div class="field col-12 md:col-6">
                                     <h:outputLabel for="reportedByPartyId" value="Reported By Party ID:" />
-                                    <p:inputNumber id="reportedByPartyId" value="#{issuesDefectsTableController.selected.reportedByPartyId}" required="true" label="Reported By Party ID" />
+                                    <p:selectOneMenu id="reportedByPartyId"
+                                                     value="#{issuesDefectsTableController.selected.reportedByPartyId}">
+                                        <f:selectItem itemLabel="-- Select reported By Party --" itemValue="#{reportedByPartyId}" />
+                                        <f:selectItems value="#{contractPartiesTableController.items}"
+                                                       var="party"
+                                                       itemValue="#{party}"
+                                                       itemLabel="#{party.legalName}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Reported Date -->
@@ -71,22 +85,36 @@
                                     </p:datePicker>
                                 </div>
 
-                                <!-- Severity -->
-                                <div class="field col-12">
-                                    <h:outputLabel for="severity" value="Severity:" />
-                                    <p:inputText id="severity" value="#{issuesDefectsTableController.selected.severity}" required="true" label="Severity" />
-                                </div>
+                                    <!-- Severity -->
+                                    <div class="field col-12 md:col-6">
+                                        <h:outputLabel for="severity" value="Severity:" />
+                                        <p:selectOneMenu id="severity"
+                                                         value="#{issuesDefectsTableController.selected.severity}">
+                                            <f:selectItem itemLabel="-- Select Severity --" itemValue="#{null}" />
+                                            <f:selectItems value="#{issuesDefectsTableController.severityItems}"
+                                                           var="severity"
+                                                           itemValue="#{severity}"
+                                                           itemLabel="#{severity}" />
+                                        </p:selectOneMenu>
+                                    </div>
 
-                                <!-- Impact -->
+                                    <!-- Status -->
+                                    <div class="field col-12 md:col-6">
+                                        <h:outputLabel for="status" value="Status:" />
+                                        <p:selectOneMenu id="status"
+                                                         value="#{issuesDefectsTableController.selected.status}">
+                                            <f:selectItem itemLabel="-- Select Status --" itemValue="#{null}" />
+                                            <f:selectItems value="#{issuesDefectsTableController.statusItems}"
+                                                           var="status"
+                                                           itemValue="#{status}"
+                                                           itemLabel="#{status}" />
+                                        </p:selectOneMenu>
+                                    </div>
+
+                                    <!-- Impact -->
                                 <div class="field col-12">
                                     <h:outputLabel for="impact1" value="Impact:" />
                                     <p:inputText id="impact1" value="#{issuesDefectsTableController.selected.impact}" required="true" label="Impact" />
-                                </div>
-
-                                <!-- Status -->
-                                <div class="field col-12">
-                                    <h:outputLabel for="status" value="Status:" />
-                                    <p:inputText id="status" value="#{issuesDefectsTableController.selected.status}" required="true" label="Status" />
                                 </div>
 
                                 <!-- Assigned To User Id -->
@@ -144,8 +172,8 @@
                                     <p:selectOneMenu id="warrantyId1" value="#{issuesDefectsTableController.selected.warrantyId}">
                                         <f:selectItem itemLabel="Select Party Type" itemValue="" />
                                         <f:selectItems value="#{warrantiesTableController.items}" var="warranty"
-                                                       itemLabel="#{warranty.warrantyType}"
-                                                       itemValue="#{warranty.id}" />
+                                                       itemLabel="#{warranty.warrantedItemDescription}"
+                                                       itemValue="#{warranty}" />
                                     </p:selectOneMenu>
                                 </div>
 
@@ -365,10 +393,10 @@
                                     </f:facet>
                                     <f:facet name="input">
                                         <p:selectOneMenu filter="true" filterMatchMode="contains" id="warrantyId" value="#{item.warrantyId}" >
-                                            <f:selectItems value="#{warrantiesTableController.itemsAvailableSelectOne}"
+                                            <f:selectItems value="#{warrantiesTableController.items}"
                                                            var="warrantyIdItem"
                                                            itemValue="#{warrantyIdItem}"
-                                                           itemLabel="#{warrantyIdItem.description}"/>
+                                                           itemLabel="#{warrantyIdItem.warrantedItemDescription}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>

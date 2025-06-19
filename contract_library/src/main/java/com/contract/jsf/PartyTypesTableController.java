@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.ejb.EJB;
 import jakarta.ejb.EJBException;
+import jakarta.faces.application.FacesMessage;
 import jakarta.inject.Named;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.component.UIComponent;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("partyTypesTableController")
 @SessionScoped
@@ -211,19 +214,33 @@ public class PartyTypesTableController implements Serializable {
     }
 
     public void save() {
-        getCreateItems().add(selected);
-        for (PartyTypesTable item : getCreateItems()) {
-            if (item.getId() == null) {
-                getFacade().create(item);
-            } else {
-                getFacade().edit(item);
-            }
-        }
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
-        }
+       try{ // Save or update
+           if (selected.getId() == null) {
+               getFacade().create(selected);
+           } else {
+               getFacade().edit(selected);
+           }
+
+           if (!JsfUtil.isValidationFailed()) {
+               items = null; // refresh list
+               JsfUtil.addSuccessMessage("Saved successfully.");
+           }
+
+       } catch (ConstraintViolationException e) {
+           for (ConstraintViolation<?> v : e.getConstraintViolations()) {
+               FacesContext.getCurrentInstance().addMessage(null,
+                       new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                               v.getPropertyPath() + ": " + v.getMessage(), null));
+           }
+       } catch (Exception e) {
+           FacesContext.getCurrentInstance().addMessage(null,
+                   new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                           "Error: " + e.getMessage(), null));
+       }
     }
+
+
+
 
     public void saveRow() {
         for (PartyTypesTable item : getEditItems()) {

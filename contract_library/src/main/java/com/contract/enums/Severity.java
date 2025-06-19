@@ -1,2 +1,6 @@
-package com.contract.enums;public class Severity {
+package com.contract.enums;
+
+public enum Severity {
+
+    Low, Medium, High, Critical
 }

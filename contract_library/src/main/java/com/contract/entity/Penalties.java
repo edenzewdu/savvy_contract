@@ -6,19 +6,11 @@ package com.contract.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
+import com.contract.enums.PenaltiesStatus;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -54,10 +46,6 @@ public class Penalties implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "contract_id")
-    private int contractId;
-    @Basic(optional = false)
-    @NotNull
     @Size(min = 1, max = 100)
     @Column(name = "breach_type")
     private String breachType;
@@ -85,11 +73,10 @@ public class Penalties implements Serializable {
     private String relatedClauseRef;
     @Column(name = "grace_period_days_applied")
     private Integer gracePeriodDaysApplied;
-    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @NotNull
-    @Size(min = 1, max = 8)
     @Column(name = "status")
-    private String status;
+    private PenaltiesStatus status;
     @Column(name = "resolution_date")
     @Temporal(TemporalType.DATE)
     private Date resolutionDate;
@@ -101,22 +88,21 @@ public class Penalties implements Serializable {
     private String notes;
     @Column(name = "proof_document_id")
     private Integer proofDocumentId;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
-    
+
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Timestamp updatedAt;
     @jakarta.persistence.Transient
     private Integer tempId;
     @jakarta.persistence.Transient
     private Boolean validCell = false;
 
+    @ManyToOne(optional = false)
+    @NotNull
+    @JoinColumn(name = "contract_id", referencedColumnName = "id")
+    private ContractsTable contractId;
     public Integer getTempId() {
         return tempId;
     }
@@ -140,7 +126,7 @@ public class Penalties implements Serializable {
         this.id = id;
     }
 
-    public Penalties(Integer id, int contractId, String breachType, String description, Date incurredDate, BigDecimal penaltyAmount, String status, Date createdAt, Date updatedAt) {
+    public Penalties(Integer id, ContractsTable contractId, String breachType, String description, Date incurredDate, BigDecimal penaltyAmount, PenaltiesStatus status) {
         this.id = id;
         this.contractId = contractId;
         this.breachType = breachType;
@@ -148,8 +134,6 @@ public class Penalties implements Serializable {
         this.incurredDate = incurredDate;
         this.penaltyAmount = penaltyAmount;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -160,11 +144,11 @@ public class Penalties implements Serializable {
         this.id = id;
     }
 
-    public int getContractId() {
+    public ContractsTable getContractId() {
         return contractId;
     }
 
-    public void setContractId(int contractId) {
+    public void setContractId(ContractsTable contractId) {
         this.contractId = contractId;
     }
 
@@ -224,11 +208,11 @@ public class Penalties implements Serializable {
         this.gracePeriodDaysApplied = gracePeriodDaysApplied;
     }
 
-    public String getStatus() {
+    public PenaltiesStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(PenaltiesStatus status) {
         this.status = status;
     }
 
@@ -268,7 +252,7 @@ public class Penalties implements Serializable {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -276,7 +260,7 @@ public class Penalties implements Serializable {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 

@@ -33,8 +33,15 @@
 
                                 <!-- Contract Id -->
                                 <div class="field col-12">
-                                    <p:outputLabel for="contractId" value="Contract ID:" />
-                                    <p:inputNumber id="contractId" value="#{warrantiesTableController.selected.contractId}" required="true" />
+                                    <p:outputLabel for="contract" value="Contract:" />
+                                    <p:selectOneMenu id="contract"
+                                                     value="#{warrantiesTableController.selected.contract}">
+                                        <f:selectItem itemLabel="-- Select Contract --" itemValue="#{null}" />
+                                        <f:selectItems value="#{contractsTableController.items}"
+                                                       var="contract"
+                                                       itemValue="#{contract}"
+                                                       itemLabel="#{contract.contractTitle}" />
+                                    </p:selectOneMenu>
                                 </div>
 
                                 <!-- Warranted Item Description-->
@@ -159,13 +166,13 @@
                                 </p:cellEditor>
                             </p:column>
 
-                            <p:column headerText="contractId">
+                            <p:column headerText="contract">
                                 <p:cellEditor>
                                     <f:facet name="output">
-                                        <h:outputText value="#{item.contractId}"/>
+                                        <h:outputText value="#{item.contract.contractTitle}"/>
                                     </f:facet>
                                     <f:facet name="input">
-                                        <p:inputText value="#{item.contractId}"/>
+                                        <p:inputText value="#{item.contract.contractTitle}" disabled="true"/>
                                     </f:facet>
                                 </p:cellEditor>
                             </p:column>

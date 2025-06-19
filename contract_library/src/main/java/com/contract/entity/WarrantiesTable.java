@@ -6,6 +6,7 @@ package com.contract.entity;
 
 import com.contract.enums.WarrantyType;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 
@@ -22,7 +23,6 @@ import jakarta.validation.constraints.Size;
 @NamedQueries({
     @NamedQuery(name = "WarrantiesTable.findAll", query = "SELECT w FROM WarrantiesTable w"),
     @NamedQuery(name = "WarrantiesTable.findById", query = "SELECT w FROM WarrantiesTable w WHERE w.id = :id"),
-    @NamedQuery(name = "WarrantiesTable.findByContractId", query = "SELECT w FROM WarrantiesTable w WHERE w.contractId = :contractId"),
     @NamedQuery(name = "WarrantiesTable.findByWarrantedItemDescription", query = "SELECT w FROM WarrantiesTable w WHERE w.warrantedItemDescription = :warrantedItemDescription"),
     @NamedQuery(name = "WarrantiesTable.findByManufacturerModel", query = "SELECT w FROM WarrantiesTable w WHERE w.manufacturerModel = :manufacturerModel"),
     @NamedQuery(name = "WarrantiesTable.findBySerialNumber", query = "SELECT w FROM WarrantiesTable w WHERE w.serialNumber = :serialNumber"),
@@ -44,10 +44,6 @@ public class WarrantiesTable implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-
-    @NotNull
-    @Column(name = "contract_id", insertable = false, updatable = false)
-    private int contractId;
 
     @NotNull
     @Size(min = 1, max = 255)
@@ -98,18 +94,15 @@ public class WarrantiesTable implements Serializable {
     @Column(name = "void_reason")
     private String voidReason;
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at")
-    private Date createdAt;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
 
-    @NotNull
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updated_at")
-    private Date updatedAt;
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Timestamp updatedAt;
+
 
     // Relationships
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "contract_id", referencedColumnName = "id")
     private ContractsTable contract;
 
@@ -133,15 +126,13 @@ public class WarrantiesTable implements Serializable {
         this.isVoided = false;
     }
 
-    public WarrantiesTable(Integer id, int contractId, String warrantedItemDescription, WarrantyType warrantyType, Date startDate, Date endDate, Date createdAt, Date updatedAt) {
+    public WarrantiesTable(Integer id, ContractsTable contract, String warrantedItemDescription, WarrantyType warrantyType, Date startDate, Date endDate, Date createdAt, Date updatedAt) {
         this.id = id;
-        this.contractId = contractId;
+        this.contract = contract;
         this.warrantedItemDescription = warrantedItemDescription;
         this.warrantyType = warrantyType;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
         this.isActive = false;
         this.isVoided = false;
     }
@@ -149,9 +140,6 @@ public class WarrantiesTable implements Serializable {
     // Getters and Setters
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
-
-    public int getContractId() { return contractId; }
-    public void setContractId(int contractId) { this.contractId = contractId; }
 
     public String getWarrantedItemDescription() { return warrantedItemDescription; }
     public void setWarrantedItemDescription(String desc) { this.warrantedItemDescription = desc; }
@@ -190,10 +178,8 @@ public class WarrantiesTable implements Serializable {
     public void setVoidReason(String voidReason) { this.voidReason = voidReason; }
 
     public Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
     public Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
 
     public Collection<IssuesDefectsTable> getIssuesDefectsTableCollection() { return issuesDefectsTableCollection; }
     public void setIssuesDefectsTableCollection(Collection<IssuesDefectsTable> col) { this.issuesDefectsTableCollection = col; }

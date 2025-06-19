@@ -4,23 +4,14 @@
  */
 package com.contract.entity;
 
+import com.contract.enums.Severity;
+import com.contract.enums.Status;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedQueries;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -53,10 +44,6 @@ public class IssuesDefectsTable implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "contract_id")
-    private int contractId;
     @Size(max = 100)
     @Column(name = "issue_category")
     private String issueCategory;
@@ -68,27 +55,23 @@ public class IssuesDefectsTable implements Serializable {
     private String issueDescription;
     @Basic(optional = false)
     @NotNull
-    @Column(name = "reported_by_party_id")
-    private int reportedByPartyId;
-    @Basic(optional = false)
-    @NotNull
     @Column(name = "reported_date")
     @Temporal(TemporalType.DATE)
     private Date reportedDate;
-    @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 8)
-    @Column(name = "severity")
-    private String severity;
     @Lob
     @Size(max = 65535)
     @Column(name = "impact")
     private String impact;
     @Basic(optional = false)
-    @NotNull
-    @Size(min = 1, max = 15)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "severity")
+    private Severity severity;
+
+    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private Status status;
+
     @Column(name = "assigned_to_user_id")
     private Integer assignedToUserId;
     @Lob
@@ -103,16 +86,20 @@ public class IssuesDefectsTable implements Serializable {
     private Date closureDate;
     @Column(name = "client_acceptance_doc_id")
     private Integer clientAcceptanceDocId;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "updated_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedAt;
+    @Column(name = "created_at", insertable = false, updatable = false)
+    private Timestamp createdAt;
+
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Timestamp updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_id", referencedColumnName = "id")
+    private ContractsTable contractId;
+
+    @ManyToOne
+    @JoinColumn(name = "reported_by_party_id", referencedColumnName = "id")
+    private ContractPartiesTable reportedByPartyId;
+
     @JoinColumn(name = "warranty_id", referencedColumnName = "id")
     @ManyToOne
     private WarrantiesTable warrantyId;
@@ -145,7 +132,7 @@ public class IssuesDefectsTable implements Serializable {
         this.id = id;
     }
 
-    public IssuesDefectsTable(Integer id, int contractId, String issueDescription, int reportedByPartyId, Date reportedDate, String severity, String status, Date createdAt, Date updatedAt) {
+    public IssuesDefectsTable(Integer id, ContractsTable contractId, String issueDescription, ContractPartiesTable reportedByPartyId, Date reportedDate, Severity severity, Status status, Date createdAt, Date updatedAt) {
         this.id = id;
         this.contractId = contractId;
         this.issueDescription = issueDescription;
@@ -153,8 +140,6 @@ public class IssuesDefectsTable implements Serializable {
         this.reportedDate = reportedDate;
         this.severity = severity;
         this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Integer getId() {
@@ -165,11 +150,11 @@ public class IssuesDefectsTable implements Serializable {
         this.id = id;
     }
 
-    public int getContractId() {
+    public ContractsTable getContractId() {
         return contractId;
     }
 
-    public void setContractId(int contractId) {
+    public void setContractId(ContractsTable contractId) {
         this.contractId = contractId;
     }
 
@@ -189,11 +174,11 @@ public class IssuesDefectsTable implements Serializable {
         this.issueDescription = issueDescription;
     }
 
-    public int getReportedByPartyId() {
+    public ContractPartiesTable getReportedByPartyId() {
         return reportedByPartyId;
     }
 
-    public void setReportedByPartyId(int reportedByPartyId) {
+    public void setReportedByPartyId(ContractPartiesTable reportedByPartyId) {
         this.reportedByPartyId = reportedByPartyId;
     }
 
@@ -205,28 +190,12 @@ public class IssuesDefectsTable implements Serializable {
         this.reportedDate = reportedDate;
     }
 
-    public String getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(String severity) {
-        this.severity = severity;
-    }
-
     public String getImpact() {
         return impact;
     }
 
     public void setImpact(String impact) {
         this.impact = impact;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
     }
 
     public Integer getAssignedToUserId() {
@@ -269,20 +238,28 @@ public class IssuesDefectsTable implements Serializable {
         this.clientAcceptanceDocId = clientAcceptanceDocId;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Severity getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(Severity severity) {
+        this.severity = severity;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public WarrantiesTable getWarrantyId() {

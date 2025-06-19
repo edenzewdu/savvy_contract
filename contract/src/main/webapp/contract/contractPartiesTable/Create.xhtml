@@ -33,7 +33,7 @@
                                 <!-- Legal Name -->
                                 <div class="field col-12">
                                     <p:outputLabel for="legalName1" value="Legal Name:" />
-                                    <p:inputTextarea id="legalName1" value="#{contractPartiesTableController.selected.legalName}" autoResize="true"/>
+                                    <p:inputTextarea id="legalName1" value="#{contractPartiesTableController.selected.legalName}" required="true" autoResize="true"/>
                                 </div>
 
                                 <!-- Short Name -->
@@ -172,10 +172,10 @@
                                     </f:facet>
                                     <f:facet name="input">
                                         <p:selectOneMenu filter="true" filterMatchMode="contains" id="partyTypeId" value="#{item.partyTypeId}" >
-                                            <f:selectItems value="#{partyTypesTableController.itemsAvailableSelectOne}"
+                                            <f:selectItems value="#{partyTypesTableController.items}"
                                                            var="partyTypeIdItem"
                                                            itemValue="#{partyTypeIdItem}"
-                                                           itemLabel="#{partyTypeIdItem.description}"/>
+                                                           itemLabel="#{partyTypeIdItem.typeName}"/>
                                         </p:selectOneMenu>
                                     </f:facet>
                                 </p:cellEditor>

@@ -1,13 +1,16 @@
 package com.contract.jsf;
 
-import com.contract.entity.ContractPartiesTable;
-import com.contract.entity.ContractsTable;
+
 import com.contract.entity.IssuesDefectsTable;
+import com.contract.entity.WarrantiesTable;
+import com.contract.enums.Severity;
+import com.contract.enums.Status;
 import com.contract.jsf.util.JsfUtil;
 import com.contract.jsf.util.JsfUtil.PersistAction;
 import com.contract.session.IssuesDefectsTableFacade;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -21,6 +24,8 @@ import java.util.ArrayList;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.convert.Converter;
 import jakarta.faces.convert.FacesConverter;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 
 @Named("issuesDefectsTableController")
 @SessionScoped
@@ -30,6 +35,7 @@ public class IssuesDefectsTableController implements Serializable {
     private com.contract.session.IssuesDefectsTableFacade ejbFacade;
     @EJB
     private com.contract.session.AbstractFacadeQuerySavvy ejbFacade1;
+    private IssuesDefectsTable selectedIssues = new IssuesDefectsTable();
     private List<IssuesDefectsTable> items = null;
     private List<IssuesDefectsTable> multiselectionItems = null;
     private List<IssuesDefectsTable> createItems = null;
@@ -58,6 +64,22 @@ public class IssuesDefectsTableController implements Serializable {
 
     public void setDataName(final String dataName) {
         this.dataName = dataName;
+    }
+
+    public Severity[] getSeverityItems() {
+        return Severity.values();
+    }
+
+    public Status[] getStatusItems() {
+        return Status.values();
+    }
+
+    public IssuesDefectsTable getSelectedIssues() {
+        return selectedIssues;
+    }
+
+    public void setSelectedIssues(IssuesDefectsTable selectedIssues) {
+        this.selectedIssues = selectedIssues;
     }
 
     public IssuesDefectsTable getSelected() {
@@ -212,22 +234,80 @@ public class IssuesDefectsTableController implements Serializable {
     }
 
     public void save() {
-        if (selected == null || selected.getContractId() == 0) {
-            JsfUtil.addErrorMessage("Validation Error: Contract is required.");
-            return;
-        }
-        if (selected.getId() == null) {
-            getFacade().create(selected);
-        } else {
-            getFacade().edit(selected);
-        }
 
-        if (!JsfUtil.isValidationFailed()) {
-            items = null;    // Invalidate list of items to trigger re-query.
-            JsfUtil.addSuccessMessage("Saved");
+        try {
+            if (selected == null || selected.getContractId() == null) {
+                JsfUtil.addErrorMessage("Validation Error: Contract is required.");
+                return;
+            }
+            if (!validateEntity(selected)) {
+                JsfUtil.addErrorMessage("Validation failed. Please check your input.");
+                return;  // stop saving if validation fails
+            }
+
+            if (selected.getId() == null) {
+                getFacade().create(selected);
+            } else {
+                getFacade().edit(selected);
+            }
+
+            if (!JsfUtil.isValidationFailed()) {
+                items = null;    // Invalidate list of items to trigger re-query.
+                selected = null;
+                JsfUtil.addSuccessMessage("Saved");
+            }
+        }  catch (EJBException ejbEx) {
+            Throwable cause = ejbEx.getCause();
+            while (cause != null) {
+                if (cause instanceof ConstraintViolationException) {
+                    ConstraintViolationException cve = (ConstraintViolationException) cause;
+                    for (ConstraintViolation<?> violation : cve.getConstraintViolations()) {
+                        System.out.println("Validation error in " + violation.getPropertyPath() + ": " + violation.getMessage());
+                    }
+                    break;
+                }
+                cause = cause.getCause();
+            }
+            // Optional: rethrow or show error message
+            JsfUtil.addErrorMessage("Validation failed: check server log for details.");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            JsfUtil.addErrorMessage("Save failed: " + ex.getMessage());
         }
     }
+    private boolean validateEntity(IssuesDefectsTable entity) {
+        boolean valid = true;
 
+        // issueDescription - required, min 1 char, max 65535 (handled by DB size but check null/empty)
+        if (entity.getIssueDescription() == null || entity.getIssueDescription().trim().isEmpty()) {
+            JsfUtil.addErrorMessage("Issue description cannot be empty.");
+            valid = false;
+        }
+
+        // reportedDate - must not be null and not future date
+        if (entity.getReportedDate() == null) {
+            JsfUtil.addErrorMessage("Reported date is required.");
+            valid = false;
+        } else if (entity.getReportedDate().after(new Date())) {
+            JsfUtil.addErrorMessage("Reported date cannot be in the future.");
+            valid = false;
+        }
+
+        // Optionally validate optional fields length (impact, resolutionDetails) if present
+        if (entity.getImpact() != null && entity.getImpact().length() > 65535) {
+            JsfUtil.addErrorMessage("Impact text is too long.");
+            valid = false;
+        }
+
+        if (entity.getResolutionDetails() != null && entity.getResolutionDetails().length() > 65535) {
+            JsfUtil.addErrorMessage("Resolution details text is too long.");
+            valid = false;
+        }
+
+        // Add any other business validations you need...
+
+        return valid;
+    }
     public void saveRow() {
         for (IssuesDefectsTable item : getEditItems()) {
             if (item.getId() == null) {
