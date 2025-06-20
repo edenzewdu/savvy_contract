@@ -5,6 +5,7 @@
       <map>
         <entry key="file://$PROJECT_DIR$/contract/src/main/webapp/WEB-INF/contractSideBar.xhtml" value="file://$PROJECT_DIR$/contract/src/main/webapp/WEB-INF" />
         <entry key="file://$PROJECT_DIR$/contract/src/main/webapp/WEB-INF/topbar.xhtml" value="file://$PROJECT_DIR$/contract/src/main/webapp/WEB-INF" />
+        <entry key="file://$PROJECT_DIR$/contract/src/main/webapp/contract/AllInOne/Create.xhtml" value="file://$PROJECT_DIR$/contract/src/main/webapp/contract/AllInOne" />
         <entry key="file://$PROJECT_DIR$/contract/src/main/webapp/contract/contractsTable/Create.xhtml" value="file://$PROJECT_DIR$/contract/src/main/webapp/contract/contractsTable" />
         <entry key="file://$PROJECT_DIR$/contract/src/main/webapp/contract/issuesDefectsTable/Create.xhtml" value="file://$PROJECT_DIR$/contract/src/main/webapp/contract/issuesDefectsTable" />
       </map>

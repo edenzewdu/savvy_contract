@@ -71,10 +71,10 @@
                                          styleClass="w-full">
                             <f:selectItem itemLabel="Select Contract Status" itemValue="" noSelectionOption="true" />
                             <f:selectItems value="#{contractStatusesTableController.items}"
-                                           var="type"
-                                           itemLabel="#{type.statusName}"
-                                           itemValue="#{type}"
-                                           itemDescription="#{type.description}" />
+                                           var="status"
+                                           itemLabel="#{status.statusName}"
+                                           itemValue="#{status}"
+                                           itemDescription="#{status.description}" />
                         </p:selectOneMenu>
                     </div>
 
