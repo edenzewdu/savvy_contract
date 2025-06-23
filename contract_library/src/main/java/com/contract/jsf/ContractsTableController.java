@@ -248,7 +248,6 @@ public class ContractsTableController implements Serializable {
         }
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
-            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }
