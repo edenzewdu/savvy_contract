@@ -210,7 +210,11 @@ public class ContractTypesTableController implements Serializable {
         return linkName;
     }
 
+    private boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
     public void save() {
+
         getCreateItems().add(selected);
         for (ContractTypesTable item : getCreateItems()) {
             if (item.getId() == null) {

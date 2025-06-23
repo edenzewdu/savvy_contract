@@ -210,7 +210,12 @@ public class ContractStatusesTableController implements Serializable {
         return linkName;
     }
 
+    private boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
     public void save() {
+
         getCreateItems().add(selected);
         for (ContractStatusesTable item : getCreateItems()) {
             if (item.getId() == null) {

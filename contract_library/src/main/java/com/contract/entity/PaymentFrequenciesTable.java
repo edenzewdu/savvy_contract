@@ -37,7 +37,6 @@ public class PaymentFrequenciesTable implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 50)
     @Column(name = "frequency_name")
     private String frequencyName;
     

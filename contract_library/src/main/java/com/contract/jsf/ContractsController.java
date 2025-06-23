@@ -2,7 +2,9 @@ package com.contract.jsf;
 
 import com.contract.entity.*;
 import com.contract.enums.*;
+import com.contract.jsf.util.JsfUtil;
 import jakarta.faces.view.ViewScoped;
+import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -19,6 +21,20 @@ import java.util.Date;
 @ViewScoped
 public class ContractsController implements Serializable {
 
+    @Inject
+    private ContractsTableController contractsTableController;
+
+    @Inject
+    private ContractTypesTableController contractTypesTableController;
+
+    @Inject
+    private ContractStatusesTableController contractStatusesTableController;
+
+    @Inject
+    private ContractItemTableController contractItemTableController;
+
+    @Inject
+    private ContractPartyRolesTableController contractPartyRolesTableController;
     private static final long serialVersionUID = 1L;
 
     // Basic contract fields
@@ -32,7 +48,7 @@ public class ContractsController implements Serializable {
 
     private String contractTitle;
     private String referenceNumber;
-    private ContractsTable contractTypeId;
+    private ContractTypesTable contractTypeId;
     private String typeName;
     private String typeDescription;
     private String contractSide;
@@ -53,6 +69,11 @@ public class ContractsController implements Serializable {
     private Double contractValue;
     private String currencyCode;
     private String governingLawJurisdiction;
+    private Integer parentContractId;
+    private String createdByUserId;
+    private Date createdAt;
+    private String updatedByUserId;
+    private Date updatedAt;
     private String contractIdentitySide;
 
     // Dates and Fees
@@ -60,7 +81,8 @@ public class ContractsController implements Serializable {
     private Date endStartDate;
     private Double cancellationFee;
     private Double retinageAmount;
-    private Double taxRate;
+    private Integer taxRate;
+    private Integer contractCurrency;
 
     // Address fields
     private Integer addressNumberCustomer1;
@@ -239,11 +261,163 @@ public class ContractsController implements Serializable {
         this.createNewWarrantyId = createNewWarrantyId;
     }
 
+    private boolean isEmpty(String value) {
+        return value == null || value.trim().isEmpty();
+    }
+
+    public boolean assignFormToContractsTableSelected() {
+        ContractsTable selectedContract = contractsTableController.getSelected();
+        if (selectedContract == null) {
+            selectedContract = new ContractsTable();
+            contractsTableController.setSelected(selectedContract);
+        }
+
+        // === Contract Type (Create New or Use Existing)
+        if (createNewType) {
+            // Skip creating/assigning if all fields are empty
+            if (isEmpty(typeName) && isEmpty(typeDescription) && isEmpty(contractSide)) {
+                // Do nothing: don't create or assign
+            } else {
+                ContractTypesTable selectedContractType = contractTypesTableController.getSelected();
+                if (selectedContractType == null) {
+                    selectedContractType = new ContractTypesTable();
+                    contractTypesTableController.setSelected(selectedContractType);
+                }
+
+                selectedContractType.setTypeName(typeName);
+                selectedContractType.setDescription(typeDescription);
+                selectedContractType.setContractSide(contractSide);
+
+                if(isEmpty(typeName)){
+                    JsfUtil.addErrorMessage("Type name is Required.");
+                    return false;
+                }
+                contractTypesTableController.save(); // Save new type
+                selectedContract.setContractTypeId(selectedContractType); // Assign new type
+            }
+        } else {
+            selectedContract.setContractTypeId(contractTypeId); // Assign existing selected type
+        }
+
+        // === Contract Status (Create New or Use Existing)
+        if (createNewStatus) {
+            if (isEmpty(statusName) && isEmpty(statusDescription)) {
+                // Do nothing: don't create or assign
+            } else {
+                ContractStatusesTable selectedContractStatus = contractStatusesTableController.getSelected();
+                if (selectedContractStatus == null) {
+                    selectedContractStatus = new ContractStatusesTable();
+                    contractStatusesTableController.setSelected(selectedContractStatus);
+                }
+
+                selectedContractStatus.setStatusName(statusName);
+                selectedContractStatus.setDescription(statusDescription);
+
+                if(isEmpty(statusName)){
+                    JsfUtil.addErrorMessage("Status name is Required.");
+                    return false;
+                }
+                contractStatusesTableController.save(); // Save new status
+                selectedContract.setContractStatusId(selectedContractStatus); // Assign new status
+            }
+        } else {
+            selectedContract.setContractStatusId(contractStatusId); // Assign existing selected status
+        }
+
+    // === Other fields
+        selectedContract.setContractTitle(contractTitle);
+        selectedContract.setReferenceNumber(referenceNumber);
+        selectedContract.setDescriptionScope(descriptionScope);
+        selectedContract.setEffectiveDate(effectiveDate);
+        selectedContract.setInitialExpiryDate(initialExpiryDate);
+        selectedContract.setCurrentExpiryDate(currentExpiryDate);
+        selectedContract.setNoticePeriodDaysForTermination(noticePeriodDaysForTermination);
+        selectedContract.setAutoRenewalEnabled(autoRenewalEnabled);
+        selectedContract.setRenewalTermMonths(renewalTermMonths);
+        selectedContract.setContractValue(contractValue);
+        selectedContract.setCurrencyCode(currencyCode);
+        selectedContract.setGoverningLawJurisdiction(governingLawJurisdiction);
+        selectedContract.setParentContractId(parentContractId);
+        selectedContract.setCreatedByUserId(createdByUserId);
+        selectedContract.setCreatedAt(createdAt);
+        selectedContract.setUpdatedByUserId(updatedByUserId);
+        selectedContract.setUpdatedAt(updatedAt);
+        selectedContract.setContractIdentitySide(contractIdentitySide);
+        selectedContract.setInitalStartDate(initalStartDate);
+        selectedContract.setEndStartDate(endStartDate);
+        selectedContract.setCancellationFee(cancellationFee);
+        selectedContract.setRetinageAmount(retinageAmount);
+        selectedContract.setTaxRate(taxRate);
+        selectedContract.setContractCurrency(contractCurrency);
+
+        // === Address fields
+        selectedContract.setAddressNumberCustomer1(addressNumberCustomer1);
+        selectedContract.setAddressNumberCustomer2(addressNumberCustomer2);
+        selectedContract.setAddressNumberCustomer3(addressNumberCustomer3);
+        selectedContract.setAddressNumberRep1(addressNumberRep1);
+        selectedContract.setAddressNumberRep2(addressNumberRep2);
+        selectedContract.setAddressNumberRep3(addressNumberRep3);
+        selectedContract.setAddressNumberRep4(addressNumberRep4);
+        selectedContract.setAddressNumberPrepared(addressNumberPrepared);
+        selectedContract.setAddressNumberAproved(addressNumberAproved);
+        selectedContract.setAddressNumberChecked(addressNumberChecked);
+
+        return true;
+    }
+
+
     // Save action
     public String save() {
-        // persist contract logic here
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Contract saved", null));
+        if (!assignFormToContractsTableSelected()) {
+            return null; // ⛔ Don't proceed with saving if validation failed
+        }
+        contractsTableController.save(); // ✅ Safe to save
+        ContractsTable savedContract = contractsTableController.getSelected();
+        if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
+            if(assignFormToContractsItemTableSelected(savedContract)){
+                contractItemTableController.save();
+            }
+        }
+        if(!(!isPrimaryCounterparty && partyId == null && isEmpty(legalName) && partyTypeId == null && isEmpty(typeName) && roleInContractId == null && isEmpty(roleName))){
+            if(assignFormToContractsPartyRolesTableSelected(savedContract)){
+                contractPartyRolesTableController.save();
+            }
+
+        }
+        FacesContext.getCurrentInstance().addMessage(null,
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "Contract saved", null));
         return null;
+    }
+
+    public boolean assignFormToContractsItemTableSelected(ContractsTable savedContract) {
+        ContractItemTable selectedContractItem = contractItemTableController.getSelected();
+        if (selectedContractItem == null) {
+            selectedContractItem = new ContractItemTable();
+            contractItemTableController.setSelected(selectedContractItem);
+        }
+        selectedContractItem.setContractId(savedContract);
+        selectedContractItem.setAmountQuantity(amountQuantity);
+        selectedContractItem.setItemsTable(itemsTable);
+        selectedContractItem.setUnitOfMeasure(unitOfMeasure);
+        selectedContractItem.setUnitAmount(unitAmount);
+        selectedContractItem.setExtendedAmount(extendedAmount);
+        selectedContractItem.setDateEnered(dateEnered);
+        selectedContractItem.setDateUpdated(dateUpdated);
+
+        return true;
+    }
+
+    public boolean assignFormToContractsPartyRolesTableSelected(ContractsTable savedContract) {
+        ContractPartyRolesTable selectedContractPartyRoles = contractPartyRolesTableController.getSelected();
+        if (selectedContractPartyRoles == null) {
+            selectedContractPartyRoles = new ContractPartyRolesTable();
+            contractPartyRolesTableController.setSelected(selectedContractPartyRoles);
+        }
+//
+//        selectedContractPartyRoles.setContractId(savedContract);
+//        selectedContractPartyRoles.getPartyId();
+//        selectedContractPartyRoles.
+        return true;
     }
 
     // Cancel create
@@ -271,6 +445,11 @@ public class ContractsController implements Serializable {
         renewalTermMonths = null;
         contractValue = null;
         currencyCode = null;
+        parentContractId = null;
+        createdByUserId = null;
+        createdAt = null;
+        updatedByUserId = null;
+        updatedAt = null;
         governingLawJurisdiction = null;
         contractIdentitySide = null;
         initalStartDate = null;
@@ -278,6 +457,7 @@ public class ContractsController implements Serializable {
         cancellationFee = null;
         retinageAmount = null;
         taxRate = null;
+        contractCurrency = null;
 
         addressNumberCustomer1 = null;
         addressNumberCustomer2 = null;
@@ -405,6 +585,46 @@ public class ContractsController implements Serializable {
         this.currencyCode = currencyCode;
     }
 
+    public Integer getParentContractId() {
+        return parentContractId;
+    }
+
+    public void setParentContractId(Integer parentContractId) {
+        this.parentContractId = parentContractId;
+    }
+
+    public String getCreatedByUserId() {
+        return createdByUserId;
+    }
+
+    public void setCreatedByUserId(String createdByUserId) {
+        this.createdByUserId = createdByUserId;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedByUserId() {
+        return updatedByUserId;
+    }
+
+    public void setUpdatedByUserId(String updatedByUserId) {
+        this.updatedByUserId = updatedByUserId;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public String getGoverningLawJurisdiction() {
         return governingLawJurisdiction;
     }
@@ -453,12 +673,20 @@ public class ContractsController implements Serializable {
         this.retinageAmount = retinageAmount;
     }
 
-    public Double getTaxRate() {
+    public Integer getTaxRate() {
         return taxRate;
     }
 
-    public void setTaxRate(Double taxRate) {
+    public void setTaxRate(Integer taxRate) {
         this.taxRate = taxRate;
+    }
+
+    public Integer getContractCurrency() {
+        return contractCurrency;
+    }
+
+    public void setContractCurrency(Integer contractCurrency) {
+        this.contractCurrency = contractCurrency;
     }
 
     public Integer getAddressNumberCustomer1() {
@@ -688,11 +916,11 @@ public class ContractsController implements Serializable {
         this.referenceNumber = referenceNumber;
     }
 
-    public ContractsTable getContractTypeId() {
+    public ContractTypesTable getContractTypeId() {
         return contractTypeId;
     }
 
-    public void setContractTypeId(ContractsTable contractTypeId) {
+    public void setContractTypeId(ContractTypesTable contractTypeId) {
         this.contractTypeId = contractTypeId;
     }
 

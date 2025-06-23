@@ -187,6 +187,59 @@
                                      styleClass="w-full" />
                     </div>
 
+                    <!-- Parent Contract Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="parentContractId" value="Parent Contract Id:" />
+                        <p:inputText id="parentContractId"
+                                     value="#{contractsTableController.selected.parentContractId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Created By User Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="createdByUserId" value="Created By User Id:" />
+                        <p:inputText id="createdByUserId"
+                                     value="#{contractsTableController.selected.createdByUserId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Created At -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="createdAt" value="Created At:"/>
+                        <p:datePicker id="createdAt"
+                                      value="#{contractsTableController.selected.createdAt}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select current created date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      style="flex: 1;" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
+                    <!-- Updated By User Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="updatedByUserId" value="Updated By User Id:" />
+                        <p:inputText id="updatedByUserId"
+                                     value="#{contractsTableController.selected.updatedByUserId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Updated At -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="updatedAt" value="Updated At:"/>
+                        <p:datePicker id="updatedAt"
+                                      value="#{contractsTableController.selected.updatedAt}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select current updated date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      style="flex: 1;" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
                     <!-- Contract Identity Side -->
                     <div class="field col-12">
                         <h:outputLabel for="contractIdentitySide" value="Contract Identity Side:" />
@@ -247,6 +300,11 @@
                     <h:outputLabel for="taxRate" value="Tax Rate:"/>
                     <p:inputNumber id="taxRate" value="#{contractsTableController.selected.taxRate}" style="width: 50%"/>
                 </div>
+
+                    <div class="field col-12 md:col-3">
+                        <h:outputLabel for="contractCurrency" value="Tax Rate:"/>
+                        <p:inputNumber id="contractCurrency" value="#{contractsTableController.selected.contractCurrency}" style="width: 50%"/>
+                    </div>
                 </div>
             </p:panel>
 

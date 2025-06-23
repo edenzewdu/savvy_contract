@@ -36,6 +36,7 @@
                     <div class="field col-12">
                         <h:outputLabel for="contractTitle" value="Contract Title:" />
                         <p:inputText id="contractTitle"
+                                     required="true"
                                      value="#{contractsController.contractTitle}"
                                      styleClass="w-full" />
                     </div>
@@ -48,116 +49,132 @@
                                      styleClass="w-full" />
                     </div>
 
-            <!-- Toggle between Select or Create -->
-            <div class="field col-12">
-                <h:outputLabel for="toggleType" value="Select or Create Contract Type:" />
-                <p:selectOneRadio id="toggleType"
-                                  value="#{contractsController.createNewType}"
-                                  layout="responsive">
-                    <f:selectItem itemLabel="Select Existing" itemValue="false" />
-                    <f:selectItem itemLabel="Create New" itemValue="true" />
-                    <p:ajax update="@form" />
-                </p:selectOneRadio>
-            </div>
-
-            <!-- Existing Contract Type Dropdown -->
-            <h:panelGroup rendered="#{!contractsController.createNewType}">
-                <div class="field col-12 md:col-6">
-                    <h:outputLabel for="contractTypeId" value="Contract Type:" />
-                    <p:selectOneMenu id="contractTypeId"
-                                     value="#{contractsController.contractTypeId}"
-                                     styleClass="w-full">
-                        <f:selectItem itemLabel="Select Contract Type" itemValue="" noSelectionOption="true" />
-                        <f:selectItems value="#{contractTypesTableController.items}"
-                                       var="type"
-                                       itemLabel="#{type.typeName}"
-                                       itemValue="#{type}" />
-                    </p:selectOneMenu>
-                </div>
-            </h:panelGroup>
-
-            <!-- Create New Contract Type Form -->
-            <h:panelGroup rendered="#{contractsController.createNewType}">
-            <p:panel header="Create New Contract Type" styleClass="mb-3 p-3">
-                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
-                    <!-- Type Name -->
+                    <!-- Toggle between Select or Create Contract Type -->
                     <div class="field col-12">
-                        <h:outputLabel for="typeName" value="Type Name:" />
-                        <p:inputText id="typeName"
-                                     value="#{contractsController.typeName}"
-                                     required="true"
-                                     requiredMessage="Type Name is required" />
-                    </div>
+                        <h:outputLabel for="ContractsTableCreateForm:toggleType"
+                                       value="Select or Create Contract Type:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
 
-                    <!-- Description -->
-                    <div class="field col-12">
-                        <h:outputLabel for="description1" value="Description:" />
-                        <p:inputTextarea id="description1"
-                                         value="#{contractsController.typeDescription}"
-                                         rows="4" autoResize="true" />
-                    </div>
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleType" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleType" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
 
-                    <!-- Contract Side -->
-                    <div class="field col-12">
-                        <h:outputLabel for="contractSide" value="Contract Side:" />
-                        <p:inputText id="contractSide"
-                                     value="#{contractsController.contractSide}"
-                                     required="true"
-                                     requiredMessage="Contract Side is required" />
-                    </div>
-                </div>
-            </p:panel>
-            </h:panelGroup>
-
-                    <!-- Toggle between Select or Create -->
-                    <div class="field col-12">
-                        <h:outputLabel for="toggleStatus" value="Select or Create Contract Status:" />
-                        <p:selectOneRadio id="toggleStatus"
-                                          value="#{contractsController.createNewStatus}"
-                                          layout="responsive">
+                        <p:selectOneRadio id="toggleType"
+                                          value="#{contractsController.createNewType}"
+                                          layout="custom"
+                                          style="display: none;">
                             <f:selectItem itemLabel="Select Existing" itemValue="false" />
                             <f:selectItem itemLabel="Create New" itemValue="true" />
-                            <p:ajax update="@form" />
+                            <p:ajax update="contractTypeWrapper" />
                         </p:selectOneRadio>
                     </div>
 
-                    <!-- Existing Contract Status Dropdown -->
-                    <h:panelGroup rendered="#{!contractsController.createNewStatus}">
-                        <div class="field col-12 md:col-6">
-                            <h:outputLabel for="contractStatusId" value="Contract Status:" />
-                            <p:selectOneMenu id="contractStatusId"
-                                             value="#{contractsController.contractStatusId}"
-                                             styleClass="w-full">
-                                <f:selectItem itemLabel="Select Contract Status" itemValue="" noSelectionOption="true" />
-                                <f:selectItems value="#{contractStatusesTableController.items}"
-                                               var="status"
-                                               itemLabel="#{status.statusName}"
-                                               itemValue="#{status}"
-                                               itemDescription="#{status.description}" />
-                            </p:selectOneMenu>
-                        </div>
-                    </h:panelGroup>
-
-                    <!-- Create New Contract Status Form -->
-                    <h:panelGroup rendered="#{contractsController.createNewStatus}">
-                        <p:panel header="Create New Contract Status" styleClass="mb-3 p-3">
-                            <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
-
-                                <!-- Status Name -->
-                                <div class="field col-12">
-                                    <h:outputLabel for="statusName" value="Status Name:" />
-                                    <p:inputText id="statusName" value="#{contractsController.statusName}" required="true" label="Status Name" />
-                                </div>
-
-                                <!-- Description -->
-                                <div class="field col-12">
-                                    <h:outputLabel for="statusDescription" value="Description:" />
-                                    <p:inputTextarea id="statusDescription" value="#{contractsController.statusDescription}" rows="4" cols="30" autoResize="true" />
-                                </div>
-
+                    <!-- Contract Type Section -->
+                    <h:panelGroup id="contractTypeWrapper">
+                        <h:panelGroup rendered="#{!contractsController.createNewType}">
+                            <div class="field col-12">
+                                <h:outputLabel for="contractTypeId" value="Contract Type:" />
+                                <p:selectOneMenu id="contractTypeId"
+                                                 value="#{contractsController.contractTypeId}"
+                                                 styleClass="w-full">
+                                    <f:selectItem itemLabel="Select Contract Type" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{contractTypesTableController.items}"
+                                                   var="type"
+                                                   itemLabel="#{type.typeName}"
+                                                   itemValue="#{type}" />
+                                </p:selectOneMenu>
                             </div>
-                        </p:panel>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{contractsController.createNewType}">
+                            <p:panel header="Create New Contract Type" styleClass="mb-3 p-3">
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
+                                    <div class="field col-12">
+                                        <h:outputLabel for="typeName" value="Type Name:" />
+                                        <p:inputText id="typeName" value="#{contractsController.typeName}" requiredMessage="Type Name is required" />
+                                    </div>
+                                    <div class="field col-12">
+                                        <h:outputLabel for="description1" value="Description:" />
+                                        <p:inputTextarea id="description1" value="#{contractsController.typeDescription}" rows="4" autoResize="true" />
+                                    </div>
+                                    <div class="field col-12">
+                                        <h:outputLabel for="contractSide" value="Contract Side:" />
+                                        <p:inputText id="contractSide" value="#{contractsController.contractSide}" requiredMessage="Contract Side is required" />
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </h:panelGroup>
                     </h:panelGroup>
+
+
+                    <!-- Toggle between Select or Create Contract Status -->
+                    <div class="field col-12">
+                        <h:outputLabel for="ContractsTableCreateForm:toggleStatus"
+                                       value="Select or Create Contract Status:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
+
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleStatus" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleStatus" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
+
+                        <p:selectOneRadio id="toggleStatus"
+                                          value="#{contractsController.createNewStatus}"
+                                          layout="custom"
+                                          style="display: none;">
+                            <f:selectItem itemLabel="Select Existing" itemValue="false" />
+                            <f:selectItem itemLabel="Create New" itemValue="true" />
+                            <p:ajax update="contractStatusWrapper" />
+                        </p:selectOneRadio>
+                    </div>
+
+                    <!-- Contract Status Section -->
+                    <h:panelGroup id="contractStatusWrapper">
+                        <h:panelGroup rendered="#{!contractsController.createNewStatus}">
+                            <div class="field col-12 md:col-6">
+                                <h:outputLabel for="contractStatusId" value="Contract Status:" />
+                                <p:selectOneMenu id="contractStatusId"
+                                                 value="#{contractsController.contractStatusId}"
+                                                 styleClass="w-full">
+                                    <f:selectItem itemLabel="Select Contract Status" itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{contractStatusesTableController.items}"
+                                                   var="status"
+                                                   itemLabel="#{status.statusName}"
+                                                   itemValue="#{status}"
+                                                   itemDescription="#{status.description}" />
+                                </p:selectOneMenu>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup rendered="#{contractsController.createNewStatus}">
+                            <p:panel header="Create New Contract Status" styleClass="mb-3 p-3">
+                                <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
+                                    <div class="field col-12">
+                                        <h:outputLabel for="statusName" value="Status Name:" />
+                                        <p:inputText id="statusName" value="#{contractsController.statusName}" label="Status Name" />
+                                    </div>
+                                    <div class="field col-12">
+                                        <h:outputLabel for="statusDescription" value="Description:" />
+                                        <p:inputTextarea id="statusDescription" value="#{contractsController.statusDescription}" rows="4" autoResize="true" />
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </h:panelGroup>
+                    </h:panelGroup>
+
                     <!-- Description Scope -->
                     <div class="field col-12">
                         <h:outputLabel for="descriptionScope" value="Description Scope:" />
@@ -267,6 +284,60 @@
                                      styleClass="w-full" />
                     </div>
 
+                    <!-- Parent Contract Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="parentContractId" value="Parent Contract Id:" />
+                        <p:inputText id="parentContractId"
+                                     value="#{contractsController.parentContractId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Created By User Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="createdByUserId" value="Created By User Id:" />
+                        <p:inputText id="createdByUserId"
+                                     value="#{contractsController.createdByUserId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Created At -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="createdAt" value="Created At:"/>
+                        <p:datePicker id="createdAt"
+                                      value="#{contractsController.createdAt}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select current created date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      style="flex: 1;" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
+                    <!-- Updated By User Id -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="updatedByUserId" value="Updated By User Id:" />
+                        <p:inputText id="updatedByUserId"
+                                     value="#{contractsController.updatedByUserId}"
+                                     styleClass="w-full" />
+                    </div>
+
+                    <!-- Updated At -->
+                    <div class="field col-12 md:col-6">
+                        <h:outputLabel for="updatedAt" value="Updated At:"/>
+                        <p:datePicker id="updatedAt"
+                                      value="#{contractsController.updatedAt}"
+                                      pattern="yyyy-MM-dd"
+                                      placeholder="Select current updated date"
+                                      showIcon="true"
+                                      monthNavigator="true"
+                                      yearNavigator="true"
+                                      style="flex: 1;" >
+                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                        </p:datePicker>
+                    </div>
+
                     <!-- Contract Identity Side -->
                     <div class="field col-12">
                         <h:outputLabel for="contractIdentitySide" value="Contract Identity Side:" />
@@ -311,19 +382,24 @@
                         </p:datePicker>
                     </div>
 
-                    <div class="field col-12 md:col-4">
+                    <div class="field col-12 md:col-3">
                         <h:outputLabel for="cancellationFee" value="Cancellation Fee:"/>
                         <p:inputNumber id="cancellationFee" value="#{contractsController.cancellationFee}" style="width: 50%"/>
                     </div>
 
-                    <div class="field col-12 md:col-4">
+                    <div class="field col-12 md:col-3">
                         <h:outputLabel for="retinageAmount" value="Retinage Amount:"/>
                         <p:inputNumber id="retinageAmount" value="#{contractsController.retinageAmount}" style="width: 50%"/>
                     </div>
 
-                    <div class="field col-12 md:col-4">
+                    <div class="field col-12 md:col-3">
                         <h:outputLabel for="taxRate" value="Tax Rate:"/>
                         <p:inputNumber id="taxRate" value="#{contractsController.taxRate}" style="width: 50%"/>
+                    </div>
+
+                    <div class="field col-12 md:col-3">
+                        <h:outputLabel for="contractCurrency" value="Tax Rate:"/>
+                        <p:inputNumber id="contractCurrency" value="#{contractsController.contractCurrency}" style="width: 50%"/>
                     </div>
                 </div>
             </p:panel>
@@ -393,32 +469,32 @@
 
                     <div class="field col-12">
                         <h:outputLabel for="amountQuantity" value="Amount Quantity:"/>
-                        <p:inputText id="amountQuantity" value="#{contractsController.amountQuantity}" required="true" label="Amount Quantity"/>
+                        <p:inputText id="amountQuantity" value="#{contractsController.amountQuantity}" label="Amount Quantity"/>
                     </div>
 
                     <div class="field col-12 md:col-3">
                         <h:outputLabel for="itemsTable" value="Items Table:"/>
-                        <p:inputNumber id="itemsTable" value="#{contractsController.itemsTable}" required="true" label="Items Table"/>
+                        <p:inputNumber id="itemsTable" value="#{contractsController.itemsTable}" label="Items Table"/>
                     </div>
 
                     <div class="field col-12 md:col-3">
                         <h:outputLabel for="unitOfMeasure" value="Unit Of Measure:"/>
-                        <p:inputNumber id="unitOfMeasure" value="#{contractsController.unitOfMeasure}" required="true" label="Unit Of Measure"/>
+                        <p:inputNumber id="unitOfMeasure" value="#{contractsController.unitOfMeasure}" label="Unit Of Measure"/>
                     </div>
 
                     <div class="field col-12 md:col-3">
                         <h:outputLabel for="unitAmount" value="Unit Amount:"/>
-                        <p:inputText id="unitAmount" value="#{contractsController.unitAmount}" required="true" label="Unit Amount"/>
+                        <p:inputText id="unitAmount" value="#{contractsController.unitAmount}" label="Unit Amount"/>
                     </div>
 
                     <div class="field col-12 md:col-3">
                         <h:outputLabel for="extendedAmount" value="Extended Amount:"/>
-                        <p:inputText id="extendedAmount" value="#{contractsController.extendedAmount}" required="true" label="Extended Amount"/>
+                        <p:inputText id="extendedAmount" value="#{contractsController.extendedAmount}" label="Extended Amount"/>
                     </div>
 
                     <!--                                <div class="field col-12">-->
                     <!--                                    <h:outputLabel for="usersId" value="Users ID:"/>-->
-                    <!--                                    <p:inputText id="usersId" value="#{contractsController.usersId}" required="true" label="Users ID"/>-->
+                    <!--                                    <p:inputText id="usersId" value="#{contractsController.usersId}" label="Users ID"/>-->
                     <!--                                </div>-->
 
                     <div class="field col-12 md:col-6">
@@ -498,7 +574,7 @@
                             <!-- Legal Name -->
                             <div class="field col-12">
                                 <p:outputLabel for="legalName1" value="Legal Name:" />
-                                <p:inputTextarea id="legalName1" value="#{contractsController.legalName}" required="true" autoResize="true"/>
+                                <p:inputTextarea id="legalName1" value="#{contractsController.legalName}" autoResize="true"/>
                             </div>
 
                             <!-- Short Name -->
@@ -542,7 +618,7 @@
                                         <div class="field col-12">
                                             <h:outputLabel for="partyTypeName" value="Type Name:" />
                                             <p:inputText id="partyTypeName" value="#{contractsController.typeName}"
-                                                         required="true" label="Party Type Name" />
+                                                         label="Party Type Name" />
                                         </div>
 
                                     </div>
@@ -599,7 +675,7 @@
                                 <div class="field col-12">
                                     <h:outputLabel for="roleName" value="Role Name:" />
                                     <p:inputText id="roleName" value="#{contractsController.roleName}"
-                                                 required="true" label="Role Name">
+                                                 label="Role Name">
                                         <f:validateLength minimum="1" maximum="100"/>
                                     </p:inputText>
 
@@ -617,7 +693,7 @@
                     <!-- Milestone Name -->
                     <div class="field col-12">
                         <p:outputLabel for="milestoneName1" value="Milestone Name:" />
-                        <p:inputText id="milestoneName1" value="#{contractsController.milestoneName}" required="true" label="Milestone Name" />
+                        <p:inputText id="milestoneName1" value="#{contractsController.milestoneName}" label="Milestone Name" />
                     </div>
 
                     <!-- Description -->
@@ -710,7 +786,7 @@
 
                                     <h:outputLabel for="milestoneStatusName" value="Status Name:" />
                                     <p:inputText id="milestoneStatusName" value="#{contractsController.milestoneStatusName}"
-                                                 required="true" label="Status Name" />
+                                                 label="Status Name" />
 
                                 </div>
                             </div>
@@ -728,13 +804,13 @@
                     <!--Issue Category -->
                     <div class="field col-12">
                         <h:outputLabel for="issueCategory" value="Issue Category:" />
-                        <p:inputText id="issueCategory" value="#{contractsController.issueCategory}" required="true" label="Issue Category" />
+                        <p:inputText id="issueCategory" value="#{contractsController.issueCategory}" label="Issue Category" />
                     </div>
 
                     <!-- Issue Description -->
                     <div class="field col-12">
                         <h:outputLabel for="issueDescription1" value="Issue Description:" />
-                        <p:inputTextarea id="issueDescription1" value="#{contractsController.issueDescription}" required="true" rows="4" cols="30" label="Issue Description" />
+                        <p:inputTextarea id="issueDescription1" value="#{contractsController.issueDescription}" rows="4" cols="30" label="Issue Description" />
                     </div>
 
 <!--                    &lt;!&ndash; Reported By Party Id &ndash;&gt;-->
@@ -794,7 +870,7 @@
                     <!-- Impact -->
                     <div class="field col-12">
                         <h:outputLabel for="impact1" value="Impact:" />
-                        <p:inputText id="impact1" value="#{contractsController.impact}" required="true" label="Impact" />
+                        <p:inputText id="impact1" value="#{contractsController.impact}" label="Impact" />
                     </div>
 
                     <!-- Assigned To User Id -->
@@ -982,7 +1058,7 @@
                     <!-- Breach Type -->
                     <div class="field col-12">
                         <h:outputLabel for="breachType" value="Breach Type"/>
-                        <p:inputText id="breachType" value="#{contractsController.breachType}" required="true"/>
+                        <p:inputText id="breachType" value="#{contractsController.breachType}"/>
                     </div>
 
                     <!-- Description -->
@@ -1219,7 +1295,7 @@
                 <!-- Frequency Name -->
                 <div class="field col-12">
                     <h:outputLabel for="frequencyName" value="Frequency Name:" />
-                    <p:inputText id="frequencyName" value="#{paymentFrequenciesTableController.selected.frequencyName}" required="true" label="Frequency Name" />
+                    <p:inputText id="frequencyName" value="#{paymentFrequenciesTableController.selected.frequencyName}" label="Frequency Name" />
                 </div>
 
             </div>
@@ -1230,19 +1306,19 @@
                     <!-- Retention Reason -->
                     <div class="field col-12">
                         <h:outputLabel for="retentionReason" value="Retention Reason:"/>
-                        <p:inputText id="retentionReason" value="#{contractsController.retentionReason}" required="true"/>
+                        <p:inputText id="retentionReason" value="#{contractsController.retentionReason}" />
                     </div>
 
                     <!-- Retained Percentage Applied -->
                     <div class="field col-12">
                         <h:outputLabel for="retainedPercentageApplied" value="Retained Percentage Applied:"/>
-                        <p:inputNumber id="retainedPercentageApplied" value="#{contractsController.retainedPercentageApplied}" required="true"/>
+                        <p:inputNumber id="retainedPercentageApplied" value="#{contractsController.retainedPercentageApplied}" />
                     </div>
 
                     <!-- Initial Retained Amount -->
                     <div class="field col-12">
                         <h:outputLabel for="initialRetainedAmount" value="Initial Retained Amount:"/>
-                        <p:inputNumber id="initialRetainedAmount" value="#{contractsController.initialRetainedAmount}" required="true"/>
+                        <p:inputNumber id="initialRetainedAmount" value="#{contractsController.initialRetainedAmount}" />
                     </div>
 
                     <!-- Currency -->
