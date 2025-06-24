@@ -144,7 +144,7 @@
                     <!-- Contract Status Section -->
                     <h:panelGroup id="contractStatusWrapper">
                         <h:panelGroup rendered="#{!contractsController.createNewStatus}">
-                            <div class="field col-12 md:col-6">
+                            <div class="field col-12">
                                 <h:outputLabel for="contractStatusId" value="Contract Status:" />
                                 <p:selectOneMenu id="contractStatusId"
                                                  value="#{contractsController.contractStatusId}"
@@ -536,22 +536,39 @@
                     <!-- Primary Counterparty -->
                     <div class="field col-12">
                         <h:outputLabel for="isPrimaryCounterparty" value="Primary Counterparty:" style="margin-right: 2%" />
-                        <p:selectBooleanCheckbox id="isPrimaryCounterparty" value="#{contractPartyRolesTableController.selected.isPrimaryCounterparty}" />
+                        <p:selectBooleanCheckbox id="isPrimaryCounterparty" value="#{contractsController.primaryCounterParty}" />
                     </div>
 
                     <!-- Party ID -->
                     <!-- Toggle between Select or Create -->
                     <div class="field col-12">
-                        <h:outputLabel for="toggleParty" value="Select or Create Contract Party Type:" />
+                        <h:outputLabel for="ContractsTableCreateForm:toggleParty"
+                                       value="Select or Create Contract Party Type:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
+
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleParty" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:toggleParty" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
+
                         <p:selectOneRadio id="toggleParty"
                                           value="#{contractsController.createNewParty}"
-                                          layout="responsive">
+                                          layout="custom"
+                                          style="display: none;">
                             <f:selectItem itemLabel="Select Existing" itemValue="false" />
                             <f:selectItem itemLabel="Create New" itemValue="true" />
-                            <p:ajax update="@form" />
+                            <p:ajax update="contractPartyWrapper" />
                         </p:selectOneRadio>
                     </div>
 
+                    <!-- Contract Party Section -->
+                    <h:panelGroup id="contractPartyWrapper">
                     <!-- Existing Party Dropdown -->
                     <h:panelGroup rendered="#{!contractsController.createNewParty}">
                         <div class="field col-12">
@@ -586,19 +603,36 @@
                             <!--Party Type-->
                             <!-- Toggle between Select or Create -->
                             <div class="field col-12">
-                                <h:outputLabel for="togglePartyType" value="Select or Create Contract Party Type:" />
+                                <h:outputLabel for="ContractsTableCreateForm:togglePartyType"
+                                               value="Select or Create Contract Party Type:"
+                                               style="display: block; margin-bottom: 0.5rem;" />
+
+                                <div style="display: flex; gap: 2rem; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <p:radioButton for="ContractsTableCreateForm:togglePartyType" itemIndex="0" />
+                                        <span>Select Existing</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <p:radioButton for="ContractsTableCreateForm:togglePartyType" itemIndex="1" />
+                                        <span>Create New</span>
+                                    </div>
+                                </div>
+
                                 <p:selectOneRadio id="togglePartyType"
                                                   value="#{contractsController.createNewPartyType}"
-                                                  layout="responsive">
+                                                  layout="custom"
+                                                  style="display: none;">
                                     <f:selectItem itemLabel="Select Existing" itemValue="false" />
                                     <f:selectItem itemLabel="Create New" itemValue="true" />
-                                    <p:ajax update="@form" />
+                                    <p:ajax update="contractPartyTypeWrapper" />
                                 </p:selectOneRadio>
                             </div>
 
+                            <!-- Contract Party Section -->
+                            <h:panelGroup id="contractPartyTypeWrapper">
                             <!-- Existing Contract Type Dropdown -->
                             <h:panelGroup rendered="#{!contractsController.createNewPartyType}">
-                                <div class="field col-12 md:col-6">
+                                <div class="field col-12">
                                     <p:outputLabel for="partyType" value="Party Type:" />
                                     <p:selectOneMenu id="partyType" value="#{contractsController.partyTypeId}">
                                         <f:selectItem itemLabel="Select Party Type" itemValue="" />
@@ -610,8 +644,8 @@
                             </h:panelGroup>
 
                             <!-- Create New Contract Party Type Form -->
-                            <h:panelGroup rendered="#{contractsController.createNewPartyType}" class="field col-12">
-                                <p:panel header="Create New Party Type">
+                            <h:panelGroup rendered="#{contractsController.createNewPartyType}">
+                                <p:panel header="Create New Party Type" styleClass="mb-3 p-3">
 
                                     <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
                                         <!-- Type Name -->
@@ -624,9 +658,9 @@
                                     </div>
                                 </p:panel>
                             </h:panelGroup>
-
+                            </h:panelGroup>
                             <!-- Registration Number -->
-                            <div class="field col-12 md:col-6">
+                            <div class="field col-12">
                                 <p:outputLabel for="registrationNumber" value="Registration Number:" />
                                 <p:inputText id="registrationNumber" value="#{contractsController.registrationNumber}" maxlength="100" />
                             </div>
@@ -640,20 +674,39 @@
                         </div>
                     </p:panel>
                     </h:panelGroup>
+                    </h:panelGroup>
 
                     <!-- Role In Contract ID -->
                     <!-- Toggle between Select or Create -->
                     <div class="field col-12">
-                        <h:outputLabel for="roleInContractId" value="Select or Create Contract Party Role:" />
+                        <h:outputLabel for="ContractsTableCreateForm:roleInContractId"
+                                       value="Select or Create Contract Party Role:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
+
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:roleInContractId" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:roleInContractId" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
+
                         <p:selectOneRadio id="roleInContractId"
                                           value="#{contractsController.createNewPartyRoleType}"
-                                          layout="responsive">
+                                          layout="custom"
+                                          style="display: none;">
                             <f:selectItem itemLabel="Select Existing" itemValue="false" />
                             <f:selectItem itemLabel="Create New" itemValue="true" />
-                            <p:ajax update="@form" />
+                            <p:ajax update="contractPartyRoleWrapper" />
                         </p:selectOneRadio>
                     </div>
 
+
+
+                    <h:panelGroup id="contractPartyRoleWrapper">
                     <!-- Existing Party Role Dropdown -->
                     <h:panelGroup rendered="#{!contractsController.createNewPartyRoleType}" >
                         <div class="field col-12">
@@ -683,6 +736,7 @@
 
                             </div>
                         </p:panel>
+                    </h:panelGroup>
                     </h:panelGroup>
                 </div>
             </p:panel>
@@ -753,19 +807,35 @@
                     <!-- Status Id -->
                     <!-- Toggle between Select or Create -->
                     <div class="field col-12">
-                        <h:outputLabel for="statusId" value="Select or Create Milestone Status:" />
+                        <h:outputLabel for="ContractsTableCreateForm:statusId"
+                                       value="Select or Create Milestone Status:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
+
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:statusId" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:statusId" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
+
                         <p:selectOneRadio id="statusId"
                                           value="#{contractsController.createNewMilestoneStatus}"
-                                          layout="responsive">
+                                          layout="custom"
+                                          style="display: none;">
                             <f:selectItem itemLabel="Select Existing" itemValue="false" />
                             <f:selectItem itemLabel="Create New" itemValue="true" />
-                            <p:ajax update="@form" />
+                            <p:ajax update="milestoneStatusWrapper" />
                         </p:selectOneRadio>
                     </div>
 
+                    <h:panelGroup id="milestoneStatusWrapper">
                     <!-- Existing Milestone Status Dropdown -->
                     <h:panelGroup rendered="#{!contractsController.createNewMilestoneStatus}" >
-                        <div class="field col-12 md:col-6">
+                        <div class="field col-12">
                             <p:outputLabel for="statusId1" value="Status ID:" style="margin-top:10px;" />
                             <p:selectOneMenu id="statusId1" value="#{contractsController.statusId}">
                                 <f:selectItem itemLabel="Select Party Type" itemValue="" />
@@ -778,7 +848,7 @@
 
                     <!-- Create Milestone Status Form -->
                     <h:panelGroup rendered="#{contractsController.createNewMilestoneStatus}" class="field col-12">
-                        <p:panel header="Create New Milestone Status">
+                        <p:panel header="Create New Milestone Status" styleClass="mb-3 p-3">
 
                             <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
                                 <!-- Status Name -->
@@ -792,7 +862,7 @@
                             </div>
                         </p:panel>
                     </h:panelGroup>
-
+                    </h:panelGroup>
 
                 </div>
             </p:panel>
@@ -925,19 +995,35 @@
                     <!-- Warranty Id -->
                     <!-- Toggle between Select or Create -->
                     <div class="field col-12">
-                        <h:outputLabel for="warrantyId" value="Select or Create Warranty Id:" />
+                        <h:outputLabel for="ContractsTableCreateForm:warrantyId"
+                                       value="Select or Create Warranty Id:"
+                                       style="display: block; margin-bottom: 0.5rem;" />
+
+                        <div style="display: flex; gap: 2rem; align-items: center;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:warrantyId" itemIndex="0" />
+                                <span>Select Existing</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <p:radioButton for="ContractsTableCreateForm:warrantyId" itemIndex="1" />
+                                <span>Create New</span>
+                            </div>
+                        </div>
+
                         <p:selectOneRadio id="warrantyId"
                                           value="#{contractsController.createNewWarrantyId}"
-                                          layout="responsive">
+                                          layout="custom"
+                                          style="display: none;">
                             <f:selectItem itemLabel="Select Existing" itemValue="false" />
                             <f:selectItem itemLabel="Create New" itemValue="true" />
-                            <p:ajax update="@form" />
+                            <p:ajax update="warrantyWrapper" />
                         </p:selectOneRadio>
                     </div>
 
+                    <h:panelGroup id="warrantyWrapper">
                     <!-- Existing Milestone Status Dropdown -->
                     <h:panelGroup rendered="#{!contractsController.createNewWarrantyId}" >
-                        <div class="field col-12 md:col-6">
+                        <div class="field col-12">
                             <h:outputLabel for="warrantyId1" value="Warranty ID:" />
                             <p:selectOneMenu id="warrantyId1" value="#{contractsController.warrantyId}">
                                 <f:selectItem itemLabel="Select Party Type" itemValue="" />
@@ -950,7 +1036,7 @@
 
                     <!-- Create Warranty Item Form -->
                     <h:panelGroup rendered="#{contractsController.createNewWarrantyId}" class="field col-12">
-                        <p:panel header="New Warranty Record">
+                        <p:panel header="New Warranty Record" styleClass="mb-3 p-3">
                             <div class="ui-fluid formgrid grid" style="margin: 2% 4%">
 
                                 <!-- Warranted Item Description-->
@@ -1047,6 +1133,7 @@
                                 </div>
                             </div>
                         </p:panel>
+                    </h:panelGroup>
                     </h:panelGroup>
 
                 </div>

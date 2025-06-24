@@ -35,6 +35,40 @@ public class ContractsController implements Serializable {
 
     @Inject
     private ContractPartyRolesTableController contractPartyRolesTableController;
+
+    @Inject
+    private ContractPartiesTableController contractPartiesTableController;
+
+    @Inject
+    private PartyTypesTableController partyTypesTableController;
+
+    @Inject
+    private PartyRoleTypesTableController partyRoleTypesTableController;
+
+    @Inject
+    private ContractKeyDatesMilestonesTableController contractKeyDatesMilestonesTableController;
+
+    @Inject
+    private MilestoneStatusesTableController milestoneStatusesTableController;
+
+    @Inject
+    private IssuesDefectsTableController issuesDefectsTableController;
+
+    @Inject
+    private WarrantiesTableController warrantiesTableController;
+
+    @Inject
+    private PenaltiesController penaltiesController;
+
+    @Inject
+    private RebatesDiscountsTableController rebatesDiscountsTableController;
+
+    @Inject
+    private PaymentFrequenciesTableController paymentFrequenciesTableController;
+
+    @Inject
+    private RetentionsTableController retentionsTableController;
+
     private static final long serialVersionUID = 1L;
 
     // Basic contract fields
@@ -114,10 +148,10 @@ public class ContractsController implements Serializable {
     // Contract Parties Type
     private String legalName;
     private String shortName;
-    private ContractPartiesTable partyTypeId;
+    private PartyTypesTable partyTypeId;
     private String registrationNumber;
-    private String addressNumberAb;
-    private Boolean isPrimaryCounterparty;
+    private Integer addressNumberAb;
+    private Boolean isPrimaryCounterParty;
     private ContractPartiesTable partyId;
     private PartyRoleTypesTable roleInContractId;
     private String roleName;
@@ -130,8 +164,8 @@ public class ContractsController implements Serializable {
     private Integer reminderLeadDays;
     private Date completedDate;
     private String milestoneStatusName;
-
     private MilestoneStatusesTable statusId;
+    private ContractPartyRolesTable responsiblePartyId;
 
     //issue
     private String issueCategory;
@@ -317,8 +351,6 @@ public class ContractsController implements Serializable {
                     JsfUtil.addErrorMessage("Status name is Required.");
                     return false;
                 }
-                contractStatusesTableController.save(); // Save new status
-                selectedContract.setContractStatusId(selectedContractStatus); // Assign new status
             }
         } else {
             selectedContract.setContractStatusId(contractStatusId); // Assign existing selected status
@@ -371,31 +403,256 @@ public class ContractsController implements Serializable {
         if (!assignFormToContractsTableSelected()) {
             return null; // ⛔ Don't proceed with saving if validation failed
         }
-        contractsTableController.save(); // ✅ Safe to save
-        ContractsTable savedContract = contractsTableController.getSelected();
         if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
-            if(assignFormToContractsItemTableSelected(savedContract)){
-                contractItemTableController.save();
+            if(assignFormToContractsItemTableSelected()){
+                if (contractItemTableController.getSelected() == null || contractItemTableController.getSelected().getContractId() == null) {
+                    JsfUtil.addErrorMessage("Validation Error: Contract is required.");
+                    return null;
+                }
+
+            }else{
+                return null;
             }
         }
-        if(!(!isPrimaryCounterparty && partyId == null && isEmpty(legalName) && partyTypeId == null && isEmpty(typeName) && roleInContractId == null && isEmpty(roleName))){
-            if(assignFormToContractsPartyRolesTableSelected(savedContract)){
-                contractPartyRolesTableController.save();
+        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && partyTypeId == null && isEmpty(typeName) && roleInContractId == null && isEmpty(roleName))){
+            if(assignFormToContractsPartyRolesTableSelected()){
+                if (contractPartyRolesTableController.getSelected().getContractId() == null) {
+                    JsfUtil.addErrorMessage("Contract ID is required.");
+                    return null;
+                }
+                if (contractPartyRolesTableController.getSelected().getPartyId() == null) {
+                    JsfUtil.addErrorMessage("Party ID is required.");
+                    return null;
+                }
+                if (contractPartyRolesTableController.getSelected().getRoleInContractId() == null) {
+                    JsfUtil.addErrorMessage("Role In Contract ID is required.");
+                    return null;
+                }
+
+            }else{
+                return null;
             }
 
+        }
+
+        // Save Milestones
+        if (!(isEmpty(milestoneName) && isEmpty(milestoneDescription) && dueDate == null &&
+                assignedContactId == 0 && reminderLeadDays == 0 && completedDate == null &&
+                isEmpty(usersId) && statusId == null && responsiblePartyId == null &&
+                isEmpty(statusName))) {
+            if (assignFormToMilestonesTableSelected()) {
+                if (contractKeyDatesMilestonesTableController.getSelected() == null || contractKeyDatesMilestonesTableController.getSelected().getContractId() == null ) {
+                    JsfUtil.addErrorMessage("Validation Error: Contract Should be Filled");
+                    return null;
+                }
+
+            }else {
+                return null;
+            }
+        }
+
+        // Save Penalties
+        if (!(isEmpty(breachType) && isEmpty(penalitiesDescription) && incurredDate == null &&
+                penaltyAmount == null && isEmpty(currency) && isEmpty(relatedClauseRef) &&
+                gracePeriodDaysApplied == 0 && penalitiesStatus == null &&
+                penalitiesResolutionDate == null && resolvedByUserId == 0 &&
+                isEmpty(notes) && proofDocumentId == 0)) {
+            if (assignFormToPenaltiesTableSelected()) {
+                penaltiesController.save();
+            }
+        }
+
+        // Save Rebates/Discounts
+        if (!(rebateType == null && calculationBasis == null && valueParam == null &&
+                isEmpty(rebateDescription) && isEmpty(conditionText) &&
+                trackingMetricType == null && targetValueMetric == null &&
+                currentValueMetric == null && rebateStartDate == null && rebateEndDate == null &&
+                estimatedRebateAmount == null && actualRebateAmount == null &&
+                rebateStatus == null && appliedToPaymentId == 0)) {
+            if (assignFormToRebatesDiscountsTableSelected()) {
+                    BigDecimal max = new BigDecimal("9999999999999999.99");
+                    BigDecimal min = BigDecimal.ZERO;
+
+                    // Validate valueParam
+                    if (valueParam == null || valueParam.compareTo(min) < 0 || valueParam.compareTo(max) > 0) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Invalid value: Value Param must be between 0.00 and 9999999999999999.99", null));
+                        return null;
+                    }
+
+                    // Validate actualRebateAmount
+                    if (actualRebateAmount != null &&
+                            (actualRebateAmount.compareTo(min) < 0 || actualRebateAmount.compareTo(max) > 0)) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Invalid value: Actual Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                        return null;
+                    }
+
+                    // Validate currentValueMetric
+                    if (currentValueMetric != null &&
+                            (currentValueMetric.compareTo(min) < 0 || currentValueMetric.compareTo(max) > 0)) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Invalid value: Current Value Metric must be between 0.00 and 9999999999999999.99", null));
+                        return null;
+                    }
+
+                    // Validate estimatedRebateAmount
+                    if (estimatedRebateAmount != null &&
+                            (estimatedRebateAmount.compareTo(min) < 0 || estimatedRebateAmount.compareTo(max) > 0)) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Invalid value: Estimated Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                        return null;
+                    }
+
+                    // Validate targetValueMetric
+                    if (targetValueMetric != null &&
+                            (targetValueMetric.compareTo(min) < 0 || targetValueMetric.compareTo(max) > 0)) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Invalid value: Target Value Metric must be between 0.00 and 9999999999999999.99", null));
+                        return null;
+                    }
+
+                    // Validate required fields
+                    if (status == null) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Status is required.", null));
+                        return null;
+                    }
+
+                    if (rebateType == null) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Rebate Type is required.", null));
+                        return null;
+                    }
+
+                    if (calculationBasis == null) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Calculation Basis is required.", null));
+                        return null;
+                    }
+
+                    if (conditionText == null || conditionText.trim().isEmpty()) {
+                        FacesContext.getCurrentInstance().addMessage(null,
+                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                        "Condition Text is required.", null));
+                        return null;
+                    }
+
+            }else {
+                return null;
+            }
+        }
+
+        // Save Retentions
+        if (!(isEmpty(retentionReason) && retainedPercentageApplied == null && initialRetainedAmount == null &&
+                isEmpty(retentionCurrency) && amountReleasedSoFar == null &&
+                retentionStatus == null && isEmpty(releaseConditionDescription) &&
+                scheduledReleaseDate == null && actualFirstReleaseDate == null &&
+                isEmpty(retentionNotes))) {
+            if (assignFormToRetentionsTableSelected()) {
+                BigDecimal percentage = retentionsTableController.getSelected().getRetainedPercentageApplied();
+                if (percentage != null && (percentage.compareTo(new BigDecimal("999.99")) > 0 || percentage.compareTo(BigDecimal.ZERO) < 0)) {
+                    FacesContext.getCurrentInstance().addMessage(null,
+                            new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                    "Retained Percentage must be between 0.00 and 999.99", null));
+                    return null;
+                }
+
+            }else {
+                return null;
+            }
+        }
+
+        // Save Issues
+        if (!(isEmpty(issueCategory) && isEmpty(issueDescription) && reportedDate == null &&
+                severity == null && status == null && isEmpty(impact) &&
+                assignedToUserId == 0 && isEmpty(resolutionDetails) &&
+                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0)) {
+            if (assignFormToIssuesTableSelected()) {
+                // issueDescription - required, min 1 char, max 65535 (handled by DB size but check null/empty)
+                if (issueDescription == null || issueDescription.trim().isEmpty()) {
+                    JsfUtil.addErrorMessage("Issue description cannot be empty.");
+                    return null;
+                }
+
+                // reportedDate - must not be null and not future date
+                if (reportedDate == null) {
+                    JsfUtil.addErrorMessage("Reported date is required.");
+                    return null;
+                } else if (reportedDate.after(new Date())) {
+                    JsfUtil.addErrorMessage("Reported date cannot be in the future.");
+                    return null;
+                }
+
+                // Optionally validate optional fields length (impact, resolutionDetails) if present
+                if (impact != null && impact.length() > 65535) {
+                    JsfUtil.addErrorMessage("Impact text is too long.");
+                    return null;
+                }
+
+                if (resolutionDetails != null && resolutionDetails.length() > 65535) {
+                    JsfUtil.addErrorMessage("Resolution details text is too long.");
+                    return null;
+                }
+
+            }else {
+                return null;
+            }
+        }
+
+//Save Payment Frequency
+        if (!isEmpty(frequencyName)) {
+            if (!assignFormToPaymentFrequenciesTableSelected()) {
+                return null;
+            }
+        }
+
+        if(assignFormToPaymentFrequenciesTableSelected() && assignFormToPenaltiesTableSelected() && assignFormToIssuesTableSelected() && assignFormToMilestonesTableSelected() && assignFormToContractsItemTableSelected() && assignFormToContractsPartyRolesTableSelected() && assignFormToRetentionsTableSelected() && assignFormToPaymentFrequenciesTableSelected() && assignFormToRebatesDiscountsTableSelected() && assignFormToPenaltiesTableSelected() && assignFormToIssuesTableSelected() && assignFormToMilestonesTableSelected()) {
+
+            ContractsTable contract = contractsTableController.save();
+            issuesDefectsTableController.getSelected().setContractId(contract);
+            warrantiesTableController.save(); // Save new warranty
+            issuesDefectsTableController.getSelected().setWarrantyId(warrantiesTableController.getSelectedWarranty());
+            contractStatusesTableController.save(); // Save new status
+            contractItemTableController.getSelected().setContractId(contract);
+            contractItemTableController.save();
+            partyTypesTableController.save(); // Save new status
+            contractPartiesTableController.getSelected().setPartyTypeId(partyTypesTableController.getSelected());
+            contractPartyRolesTableController.save();
+            contractPartiesTableController.save(); // Save new status
+            contractPartyRolesTableController.getSelected().setPartyId(contractPartiesTableController.getSelected());
+            contractPartyRolesTableController.getSelected().setContractId(contract);
+            partyRoleTypesTableController.save(); // Save new status
+            contractPartyRolesTableController.getSelected().setRoleInContractId(partyRoleTypesTableController.getSelected());
+            contractKeyDatesMilestonesTableController.getSelected().setContractId(contract);
+            milestoneStatusesTableController.save(); // Save new milestone type
+            contractKeyDatesMilestonesTableController.getSelected().setStatusId(milestoneStatusesTableController.getSelected()); // Assign new type
+            contractKeyDatesMilestonesTableController.save();
+            rebatesDiscountsTableController.save();
+            retentionsTableController.save();
+            issuesDefectsTableController.save();
+            paymentFrequenciesTableController.save();
         }
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Contract saved", null));
         return null;
     }
 
-    public boolean assignFormToContractsItemTableSelected(ContractsTable savedContract) {
+    public boolean assignFormToContractsItemTableSelected() {
         ContractItemTable selectedContractItem = contractItemTableController.getSelected();
         if (selectedContractItem == null) {
             selectedContractItem = new ContractItemTable();
             contractItemTableController.setSelected(selectedContractItem);
         }
-        selectedContractItem.setContractId(savedContract);
+
         selectedContractItem.setAmountQuantity(amountQuantity);
         selectedContractItem.setItemsTable(itemsTable);
         selectedContractItem.setUnitOfMeasure(unitOfMeasure);
@@ -407,16 +664,257 @@ public class ContractsController implements Serializable {
         return true;
     }
 
-    public boolean assignFormToContractsPartyRolesTableSelected(ContractsTable savedContract) {
+    public boolean assignFormToContractsPartyRolesTableSelected() {
         ContractPartyRolesTable selectedContractPartyRoles = contractPartyRolesTableController.getSelected();
         if (selectedContractPartyRoles == null) {
             selectedContractPartyRoles = new ContractPartyRolesTable();
             contractPartyRolesTableController.setSelected(selectedContractPartyRoles);
         }
-//
-//        selectedContractPartyRoles.setContractId(savedContract);
-//        selectedContractPartyRoles.getPartyId();
-//        selectedContractPartyRoles.
+
+        // === Handle Contract Party (Create or Select)
+        if (createNewParty) {
+            if (isEmpty(legalName) && isEmpty(shortName) && isEmpty(registrationNumber) && addressNumberAb == 0 && partyTypeId == null && isEmpty(typeName) ) {
+                // Do nothing: don't create or assign
+            } else {
+                ContractPartiesTable selectedContractParty = contractPartiesTableController.getSelected();
+                if (selectedContractParty == null) {
+                    selectedContractParty = new ContractPartiesTable();
+                    contractPartiesTableController.setSelected(selectedContractParty);
+                }
+
+
+                // === Handle Contract Party (Create or Select)
+                if (createNewPartyType) {
+                    if (isEmpty(typeName) ) {
+                        // Do nothing: don't create or assign
+                    } else {
+                        PartyTypesTable selectedPartyType = partyTypesTableController.getSelected();
+                        if (selectedPartyType == null) {
+                            selectedPartyType = new PartyTypesTable();
+                            partyTypesTableController.setSelected(selectedPartyType);
+                        }
+
+                        selectedPartyType.setTypeName(typeName);
+
+                    }
+                } else {
+                    selectedContractParty.setPartyTypeId(partyTypeId); // Assign existing selected status
+                }
+
+                selectedContractParty.setLegalName(legalName);
+                selectedContractParty.setShortName(shortName);
+                selectedContractParty.setRegistrationNumber(registrationNumber);
+                selectedContractParty.setAddressNumberAb(addressNumberAb);
+
+
+                if(isEmpty(legalName)){
+                    JsfUtil.addErrorMessage("Legal name is Required.");
+                    return false;
+                }
+            }
+        } else {
+            selectedContractPartyRoles.setPartyId(partyId); // Assign existing selected status
+        }
+
+        if(createNewPartyRoleType){
+            if (isEmpty(roleName) ) {
+                // Do nothing: don't create or assign
+            } else {
+                PartyRoleTypesTable selectedPartyRoleType = partyRoleTypesTableController.getSelected();
+                if (selectedPartyRoleType == null) {
+                    selectedPartyRoleType = new PartyRoleTypesTable();
+                    partyRoleTypesTableController.setSelected(selectedPartyRoleType);
+                }
+
+                selectedPartyRoleType.setRoleName(roleName);
+
+            }
+        } else {
+            selectedContractPartyRoles.setRoleInContractId(roleInContractId);
+        }
+
+        selectedContractPartyRoles.setIsPrimaryCounterparty(isPrimaryCounterParty);
+
+        return true;
+    }
+
+    public boolean assignFormToMilestonesTableSelected() {
+        ContractKeyDatesMilestonesTable selectedMilestone = contractKeyDatesMilestonesTableController.getSelected();
+        if (selectedMilestone == null) {
+            selectedMilestone = new ContractKeyDatesMilestonesTable();
+            contractKeyDatesMilestonesTableController.setSelected(selectedMilestone);
+        }
+
+        // === Milestone Type (Create New or Use Existing)
+        if (createNewMilestoneStatus) {
+            if (isEmpty(milestoneName) ){
+                // Do nothing: don't create or assign
+            } else {
+                MilestoneStatusesTable selectedMilestoneType = milestoneStatusesTableController.getSelected();
+                if (selectedMilestoneType == null) {
+                    selectedMilestoneType = new MilestoneStatusesTable();
+                    milestoneStatusesTableController.setSelected(selectedMilestoneType);
+                }
+
+                selectedMilestoneType.setStatusName(statusName);
+            }
+        } else {
+            selectedMilestone.setStatusId(statusId); // Assign existing selected type
+        }
+
+        // === Set other milestone details
+        selectedMilestone.setMilestoneName(milestoneName);
+        selectedMilestone.setDescription(milestoneDescription);
+        selectedMilestone.setDueDate(dueDate);
+        selectedMilestone.setAssignedContactId(assignedContactId);
+        selectedMilestone.setReminderLeadDays(reminderLeadDays);
+        selectedMilestone.setCompletedDate(completedDate);
+
+        return true;
+    }
+
+    public boolean assignFormToIssuesTableSelected() {
+        IssuesDefectsTable selectedIssue = issuesDefectsTableController.getSelected();
+        if (selectedIssue == null) {
+            selectedIssue = new IssuesDefectsTable();
+            issuesDefectsTableController.setSelected(selectedIssue);
+        }
+
+        // === Warranty Handling (Create New or Use Existing)
+        if (createNewWarrantyId) {
+            if (isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) && isEmpty(serialNumber) && warrantyType == null &&
+                    warrantyProviderPartyId == 0 && startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
+                    !isActive && !isVoided && isEmpty(voidReason)) {
+                // Skip creation
+            } else {
+                WarrantiesTable selectedWarranty = warrantiesTableController.getSelected();
+                if (selectedWarranty == null) {
+                    selectedWarranty = new WarrantiesTable();
+                    warrantiesTableController.setSelected(selectedWarranty);
+                }
+
+                selectedWarranty.setWarrantedItemDescription(warrantedItemDescription);
+                selectedWarranty.setManufacturerModel(manufacturerModel);
+                selectedWarranty.setSerialNumber(serialNumber);
+                selectedWarranty.setWarrantyType(warrantyType);
+                selectedWarranty.setWarrantyProviderPartyId(warrantyProviderPartyId);
+                selectedWarranty.setStartDate(startDate);
+                selectedWarranty.setEndDate(endDate);
+                selectedWarranty.setCoverageScopeText(coverageScopeText);
+                selectedWarranty.setExclusionsText(exclusionsText);
+                selectedWarranty.setIsActive(isActive);
+                selectedWarranty.setIsVoided(isVoided);
+                selectedWarranty.setVoidReason(voidReason);
+
+                if(endDate == null && startDate == null){
+                    JsfUtil.addErrorMessage("Warranties Start and End Date is Required.");
+                    return false;
+                }
+            }
+        } else {
+            selectedIssue.setWarrantyId(warrantyId); // Assign existing
+        }
+
+        if(isEmpty(issueCategory)){
+            JsfUtil.addErrorMessage("Issue Category is Required.");
+            return false;
+        }
+
+        // === Set issue details
+        selectedIssue.setIssueCategory(issueCategory);
+        selectedIssue.setIssueDescription(issueDescription);
+        selectedIssue.setReportedDate(reportedDate);
+        selectedIssue.setSeverity(severity);
+        selectedIssue.setStatus(status);
+        selectedIssue.setImpact(impact);
+        selectedIssue.setAssignedToUserId(assignedToUserId);
+        selectedIssue.setResolutionDetails(resolutionDetails);
+        selectedIssue.setResolutionDate(resolutionDate);
+        selectedIssue.setClosureDate(closureDate);
+        selectedIssue.setClientAcceptanceDocId(clientAcceptanceDocId);
+
+        return true;
+    }
+
+    public boolean assignFormToPenaltiesTableSelected() {
+        Penalties selectedPenalty = penaltiesController.getSelected();
+        if (selectedPenalty == null) {
+            selectedPenalty = new Penalties();
+            penaltiesController.setSelected(selectedPenalty);
+        }
+
+        // === Set penalty fields
+        selectedPenalty.setBreachType(breachType);
+        selectedPenalty.setDescription(penalitiesDescription);
+        selectedPenalty.setIncurredDate(incurredDate);
+        selectedPenalty.setPenaltyAmount(penaltyAmount);
+        selectedPenalty.setCurrency(currency);
+        selectedPenalty.setRelatedClauseRef(relatedClauseRef);
+        selectedPenalty.setGracePeriodDaysApplied(gracePeriodDaysApplied);
+        selectedPenalty.setStatus(penalitiesStatus);
+        selectedPenalty.setResolutionDate(penalitiesResolutionDate);
+        selectedPenalty.setResolvedByUserId(resolvedByUserId);
+        selectedPenalty.setNotes(notes);
+        selectedPenalty.setProofDocumentId(proofDocumentId);
+
+        return true;
+    }
+
+    public boolean assignFormToRebatesDiscountsTableSelected() {
+        RebatesDiscountsTable selectedRebate = rebatesDiscountsTableController.getSelected();
+        if (selectedRebate == null) {
+            selectedRebate = new RebatesDiscountsTable();
+            rebatesDiscountsTableController.setSelected(selectedRebate);
+        }
+
+        selectedRebate.setRebateType(rebateType);
+        selectedRebate.setCalculationBasis(calculationBasis);
+        selectedRebate.setValueParam(valueParam);
+        selectedRebate.setDescription(rebateDescription);
+        selectedRebate.setConditionText(conditionText);
+        selectedRebate.setTrackingMetricType(trackingMetricType);
+        selectedRebate.setTargetValueMetric(targetValueMetric);
+        selectedRebate.setCurrentValueMetric(currentValueMetric);
+        selectedRebate.setStartDate(rebateStartDate);
+        selectedRebate.setEndDate(rebateEndDate);
+        selectedRebate.setEstimatedRebateAmount(estimatedRebateAmount);
+        selectedRebate.setActualRebateAmount(actualRebateAmount);
+        selectedRebate.setStatus(rebateStatus);
+        selectedRebate.setAppliedToPaymentId(appliedToPaymentId);
+
+        return true;
+    }
+
+    public boolean assignFormToPaymentFrequenciesTableSelected() {
+        PaymentFrequenciesTable selectedFrequency = paymentFrequenciesTableController.getSelected();
+        if (selectedFrequency == null) {
+            selectedFrequency = new PaymentFrequenciesTable();
+            paymentFrequenciesTableController.setSelected(selectedFrequency);
+        }
+
+        selectedFrequency.setFrequencyName(selectedFrequency.getFrequencyName());
+
+        return true;
+    }
+
+    public boolean assignFormToRetentionsTableSelected() {
+        RetentionsTable selectedRetention = retentionsTableController.getSelected();
+        if (selectedRetention == null) {
+            selectedRetention = new RetentionsTable();
+            retentionsTableController.setSelected(selectedRetention);
+        }
+
+        selectedRetention.setRetentionReason(retentionReason);
+        selectedRetention.setRetainedPercentageApplied(retainedPercentageApplied);
+        selectedRetention.setInitialRetainedAmount(initialRetainedAmount);
+        selectedRetention.setCurrency(retentionCurrency);
+        selectedRetention.setAmountReleasedSoFar(amountReleasedSoFar);
+        selectedRetention.setStatus(retentionStatus);
+        selectedRetention.setReleaseConditionDescription(releaseConditionDescription);
+        selectedRetention.setScheduledReleaseDate(scheduledReleaseDate);
+        selectedRetention.setActualFirstReleaseDate(actualFirstReleaseDate);
+        selectedRetention.setNotes(retentionNotes);
+
         return true;
     }
 
@@ -852,11 +1350,11 @@ public class ContractsController implements Serializable {
         this.shortName = shortName;
     }
 
-    public ContractPartiesTable getPartyTypeId() {
+    public PartyTypesTable getPartyTypeId() {
         return partyTypeId;
     }
 
-    public void setPartyTypeId(ContractPartiesTable partyTypeId) {
+    public void setPartyTypeId(PartyTypesTable partyTypeId) {
         this.partyTypeId = partyTypeId;
     }
 
@@ -868,11 +1366,11 @@ public class ContractsController implements Serializable {
         this.registrationNumber = registrationNumber;
     }
 
-    public String getAddressNumberAb() {
+    public Integer getAddressNumberAb() {
         return addressNumberAb;
     }
 
-    public void setAddressNumberAb(String addressNumberAb) {
+    public void setAddressNumberAb(Integer addressNumberAb) {
         this.addressNumberAb = addressNumberAb;
     }
 
@@ -924,12 +1422,12 @@ public class ContractsController implements Serializable {
         this.contractTypeId = contractTypeId;
     }
 
-    public Boolean getPrimaryCounterparty() {
-        return isPrimaryCounterparty;
+    public Boolean getPrimaryCounterParty() {
+        return isPrimaryCounterParty;
     }
 
-    public void setPrimaryCounterparty(Boolean primaryCounterparty) {
-        isPrimaryCounterparty = primaryCounterparty;
+    public void setPrimaryCounterParty(Boolean primaryCounterParty) {
+        isPrimaryCounterParty = primaryCounterParty;
     }
 
     public ContractPartiesTable getPartyId() {
@@ -1018,6 +1516,14 @@ public class ContractsController implements Serializable {
 
     public void setStatusId(MilestoneStatusesTable statusId) {
         this.statusId = statusId;
+    }
+
+    public ContractPartyRolesTable getResponsiblePartyId() {
+        return responsiblePartyId;
+    }
+
+    public void setResponsiblePartyId(ContractPartyRolesTable responsiblePartyId) {
+        this.responsiblePartyId = responsiblePartyId;
     }
 
     public String getIssueCategory() {

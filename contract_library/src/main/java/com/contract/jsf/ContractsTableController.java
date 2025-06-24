@@ -224,18 +224,18 @@ public class ContractsTableController implements Serializable {
         return linkName;
     }
 
-    public void save() {
+    public ContractsTable save() {
         // Check for duplicate contractTitle in createItems
         for (ContractsTable item : getCreateItems()) {
             if (item != selected && item.getContractTitle() != null && item.getContractTitle().equalsIgnoreCase(selected.getContractTitle())) {
                 JsfUtil.addErrorMessage("Duplicate contract title: " + selected.getContractTitle());
-                return; // Exit early to avoid saving
+                return null; // Exit early to avoid saving
             }
         }
 
     if (getFacade().existsByContractTitle(selected.getContractTitle())) {
         JsfUtil.addErrorMessage("Contract with this title already exists in the system.");
-        return;
+        return null;
     }
 
         getCreateItems().add(selected);
@@ -249,7 +249,9 @@ public class ContractsTableController implements Serializable {
         if (!JsfUtil.isValidationFailed()) {
             items = null;    // Invalidate list of items to trigger re-query.
             JsfUtil.addSuccessMessage("Saved");
+
         }
+        return selected;
     }
 
     public void saveRow() {
