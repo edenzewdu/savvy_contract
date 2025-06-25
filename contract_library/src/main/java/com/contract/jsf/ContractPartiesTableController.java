@@ -218,7 +218,6 @@ public class ContractPartiesTableController implements Serializable {
         }
         if (!JsfUtil.isValidationFailed()) {
             items = null;
-            selected = null;
             JsfUtil.addSuccessMessage("Saved");
         }
     }

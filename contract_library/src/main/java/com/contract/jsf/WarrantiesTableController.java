@@ -236,7 +236,6 @@ public class WarrantiesTableController implements Serializable {
 
             if (!JsfUtil.isValidationFailed()) {
                 items = null;    // Invalidate list of items to trigger re-query.
-                selected = null;
                 JsfUtil.addSuccessMessage("Saved");
             }
         }  catch (EJBException ejbEx) {

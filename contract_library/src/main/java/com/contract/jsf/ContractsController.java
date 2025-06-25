@@ -326,8 +326,6 @@ public class ContractsController implements Serializable {
                     JsfUtil.addErrorMessage("Type name is Required.");
                     return false;
                 }
-                contractTypesTableController.save(); // Save new type
-                selectedContract.setContractTypeId(selectedContractType); // Assign new type
             }
         } else {
             selectedContract.setContractTypeId(contractTypeId); // Assign existing selected type
@@ -397,254 +395,282 @@ public class ContractsController implements Serializable {
         return true;
     }
 
-
-    // Save action
     public String save() {
+        // 1. Assign and validate Contract first
         if (!assignFormToContractsTableSelected()) {
-            return null; // ⛔ Don't proceed with saving if validation failed
+            return null;
         }
+
+        // 2. Prepare a list of flags for all validations
+        boolean itemValid = true, roleValid = true, milestoneValid = true,
+                penaltyValid = true, rebateValid = true, retentionValid = true,
+                issueValid = true, freqValid = true;
+
+        // === 3. Validation Phase (only validation here, no saving yet)
         if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
-            if(assignFormToContractsItemTableSelected()){
-                if (contractItemTableController.getSelected() == null || contractItemTableController.getSelected().getContractId() == null) {
-                    JsfUtil.addErrorMessage("Validation Error: Contract is required.");
-                    return null;
-                }
-
-            }else{
-                return null;
+            itemValid = assignFormToContractsItemTableSelected();
+            if(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0){
+                JsfUtil.addErrorMessage("Amount Quantity, Items Table, Unit Of Measure, Unit Amount and Extended Amount are required in Contract Items Table.");
+                itemValid = false;
             }
         }
-        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && partyTypeId == null && isEmpty(typeName) && roleInContractId == null && isEmpty(roleName))){
-            if(assignFormToContractsPartyRolesTableSelected()){
-                if (contractPartyRolesTableController.getSelected().getContractId() == null) {
-                    JsfUtil.addErrorMessage("Contract ID is required.");
-                    return null;
-                }
-                if (contractPartyRolesTableController.getSelected().getPartyId() == null) {
-                    JsfUtil.addErrorMessage("Party ID is required.");
-                    return null;
-                }
-                if (contractPartyRolesTableController.getSelected().getRoleInContractId() == null) {
-                    JsfUtil.addErrorMessage("Role In Contract ID is required.");
-                    return null;
-                }
 
-            }else{
-                return null;
+        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0 && roleInContractId == null && isEmpty(roleName))){
+            roleValid = assignFormToContractsPartyRolesTableSelected();
+            if (contractPartyRolesTableController.getSelected().getPartyId() == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0) {
+                JsfUtil.addErrorMessage("Party ID is required.");
+                roleValid = false;
+            }
+            if (contractPartyRolesTableController.getSelected().getRoleInContractId() == null && isEmpty(roleName)) {
+                JsfUtil.addErrorMessage("Role In Contract ID is required.");
+                roleValid = false;
             }
 
         }
 
-        // Save Milestones
         if (!(isEmpty(milestoneName) && isEmpty(milestoneDescription) && dueDate == null &&
                 assignedContactId == 0 && reminderLeadDays == 0 && completedDate == null &&
                 isEmpty(usersId) && statusId == null && responsiblePartyId == null &&
-                isEmpty(statusName))) {
-            if (assignFormToMilestonesTableSelected()) {
-                if (contractKeyDatesMilestonesTableController.getSelected() == null || contractKeyDatesMilestonesTableController.getSelected().getContractId() == null ) {
-                    JsfUtil.addErrorMessage("Validation Error: Contract Should be Filled");
-                    return null;
-                }
-
-            }else {
-                return null;
-            }
+                isEmpty(milestoneStatusName))) {
+            milestoneValid = assignFormToMilestonesTableSelected();
         }
 
-        // Save Penalties
+        if (!(isEmpty(issueCategory) && isEmpty(issueDescription) && reportedDate == null &&
+                severity == null && status == null && isEmpty(impact) &&
+                assignedToUserId == 0 && isEmpty(resolutionDetails) &&
+                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0 &&
+                warrantyId == null && isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) &&
+                isEmpty(serialNumber) && warrantyType == null && warrantyProviderPartyId == 0 &&
+                startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
+                !isActive && !isVoided && isEmpty(voidReason))) {
+            issueValid = assignFormToIssuesTableSelected();
+        }
+
         if (!(isEmpty(breachType) && isEmpty(penalitiesDescription) && incurredDate == null &&
                 penaltyAmount == null && isEmpty(currency) && isEmpty(relatedClauseRef) &&
                 gracePeriodDaysApplied == 0 && penalitiesStatus == null &&
                 penalitiesResolutionDate == null && resolvedByUserId == 0 &&
                 isEmpty(notes) && proofDocumentId == 0)) {
-            if (assignFormToPenaltiesTableSelected()) {
-                penaltiesController.save();
-            }
+
+            penaltyValid = assignFormToPenaltiesTableSelected();
         }
 
-        // Save Rebates/Discounts
         if (!(rebateType == null && calculationBasis == null && valueParam == null &&
                 isEmpty(rebateDescription) && isEmpty(conditionText) &&
                 trackingMetricType == null && targetValueMetric == null &&
                 currentValueMetric == null && rebateStartDate == null && rebateEndDate == null &&
                 estimatedRebateAmount == null && actualRebateAmount == null &&
                 rebateStatus == null && appliedToPaymentId == 0)) {
-            if (assignFormToRebatesDiscountsTableSelected()) {
-                    BigDecimal max = new BigDecimal("9999999999999999.99");
-                    BigDecimal min = BigDecimal.ZERO;
+            rebateValid = assignFormToRebatesDiscountsTableSelected();
+            BigDecimal max = new BigDecimal("9999999999999999.99");
+            BigDecimal min = BigDecimal.ZERO;
 
-                    // Validate valueParam
-                    if (valueParam == null || valueParam.compareTo(min) < 0 || valueParam.compareTo(max) > 0) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Invalid value: Value Param must be between 0.00 and 9999999999999999.99", null));
-                        return null;
-                    }
-
-                    // Validate actualRebateAmount
-                    if (actualRebateAmount != null &&
-                            (actualRebateAmount.compareTo(min) < 0 || actualRebateAmount.compareTo(max) > 0)) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Invalid value: Actual Rebate Amount must be between 0.00 and 9999999999999999.99", null));
-                        return null;
-                    }
-
-                    // Validate currentValueMetric
-                    if (currentValueMetric != null &&
-                            (currentValueMetric.compareTo(min) < 0 || currentValueMetric.compareTo(max) > 0)) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Invalid value: Current Value Metric must be between 0.00 and 9999999999999999.99", null));
-                        return null;
-                    }
-
-                    // Validate estimatedRebateAmount
-                    if (estimatedRebateAmount != null &&
-                            (estimatedRebateAmount.compareTo(min) < 0 || estimatedRebateAmount.compareTo(max) > 0)) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Invalid value: Estimated Rebate Amount must be between 0.00 and 9999999999999999.99", null));
-                        return null;
-                    }
-
-                    // Validate targetValueMetric
-                    if (targetValueMetric != null &&
-                            (targetValueMetric.compareTo(min) < 0 || targetValueMetric.compareTo(max) > 0)) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Invalid value: Target Value Metric must be between 0.00 and 9999999999999999.99", null));
-                        return null;
-                    }
-
-                    // Validate required fields
-                    if (status == null) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Status is required.", null));
-                        return null;
-                    }
-
-                    if (rebateType == null) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Rebate Type is required.", null));
-                        return null;
-                    }
-
-                    if (calculationBasis == null) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Calculation Basis is required.", null));
-                        return null;
-                    }
-
-                    if (conditionText == null || conditionText.trim().isEmpty()) {
-                        FacesContext.getCurrentInstance().addMessage(null,
-                                new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                        "Condition Text is required.", null));
-                        return null;
-                    }
-
-            }else {
-                return null;
+            // Validate valueParam
+            if (valueParam == null || valueParam.compareTo(min) < 0 || valueParam.compareTo(max) > 0) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Value Param must be between 0.00 and 9999999999999999.99", null));
+                rebateValid = false;
             }
+
+            // Validate actualRebateAmount
+            if (actualRebateAmount != null &&
+                    (actualRebateAmount.compareTo(min) < 0 || actualRebateAmount.compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Actual Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                rebateValid = false;
+            }
+
+            // Validate currentValueMetric
+            if (currentValueMetric != null &&
+                    (currentValueMetric.compareTo(min) < 0 || currentValueMetric.compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Current Value Metric must be between 0.00 and 9999999999999999.99", null));
+                rebateValid = false;
+            }
+
+            // Validate estimatedRebateAmount
+            if (estimatedRebateAmount != null &&
+                    (estimatedRebateAmount.compareTo(min) < 0 || estimatedRebateAmount.compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Estimated Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+                rebateValid = false;
+            }
+
+            // Validate targetValueMetric
+            if (targetValueMetric != null &&
+                    (targetValueMetric.compareTo(min) < 0 || targetValueMetric.compareTo(max) > 0)) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Invalid value: Target Value Metric must be between 0.00 and 9999999999999999.99", null));
+                rebateValid = false;
+            }
+
+            // Validate required fields
+            if (status == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Status is required.", null));
+                rebateValid = false;
+            }
+
+            if (rebateType == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Rebate Type is required.", null));
+                rebateValid = false;
+            }
+
+            if (calculationBasis == null) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Calculation Basis is required.", null));
+                rebateValid = false;
+            }
+
+            if (conditionText == null || conditionText.trim().isEmpty()) {
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                "Condition Text is required.", null));
+                rebateValid = false;
+            }
+
         }
 
-        // Save Retentions
         if (!(isEmpty(retentionReason) && retainedPercentageApplied == null && initialRetainedAmount == null &&
                 isEmpty(retentionCurrency) && amountReleasedSoFar == null &&
                 retentionStatus == null && isEmpty(releaseConditionDescription) &&
                 scheduledReleaseDate == null && actualFirstReleaseDate == null &&
                 isEmpty(retentionNotes))) {
-            if (assignFormToRetentionsTableSelected()) {
-                BigDecimal percentage = retentionsTableController.getSelected().getRetainedPercentageApplied();
-                if (percentage != null && (percentage.compareTo(new BigDecimal("999.99")) > 0 || percentage.compareTo(BigDecimal.ZERO) < 0)) {
-                    FacesContext.getCurrentInstance().addMessage(null,
-                            new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                                    "Retained Percentage must be between 0.00 and 999.99", null));
-                    return null;
-                }
-
-            }else {
-                return null;
-            }
+            retentionValid = assignFormToRetentionsTableSelected();
         }
 
-        // Save Issues
+
+
+        if (!isEmpty(frequencyName)) {
+            freqValid = assignFormToPaymentFrequenciesTableSelected();
+        }
+
+        // === 4. Final Validation Check
+        if (!(itemValid && roleValid && milestoneValid && penaltyValid && rebateValid &&
+                retentionValid && issueValid && freqValid)) {
+            JsfUtil.addErrorMessage("Validation failed for one or more sections. No data was saved.");
+            return null;
+        }
+
+        if (!(isEmpty(statusName) && isEmpty(statusDescription))) {
+            if(contractStatusId == null){
+                contractStatusesTableController.save();
+                contractsTableController.getSelected().setContractStatusId(contractStatusesTableController.getSelected());
+            }
+        }
+        if (!(isEmpty(typeName) && isEmpty(typeDescription) && isEmpty(contractSide))) {
+            if(contractTypeId == null){
+                contractTypesTableController.save();
+                contractsTableController.getSelected().setContractTypeId(contractTypesTableController.getSelected());
+            }
+
+        }
+
+        // === 5. Saving Phase (only happens if all validations pass)
+        ContractsTable contract = contractsTableController.save();
+
+        if (contract == null || contract.getId() == null) {
+            JsfUtil.addErrorMessage("Contract save failed. Aborting all operations.");
+            return null;
+        }
+
+        // Set contract ID to all related entities
+        if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
+            contractItemTableController.getSelected().setContractId(contract);
+            contractItemTableController.save();
+        }
+
+        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0 && roleInContractId == null && isEmpty(roleName))){
+            if(!(isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0)){
+                if(!(isEmpty(typeName))){
+                    partyTypesTableController.save();
+                    contractPartiesTableController.getSelected().setPartyTypeId(partyTypesTableController.getSelected());
+                }
+                contractPartiesTableController.save();
+                contractPartyRolesTableController.getSelected().setPartyId(contractPartiesTableController.getSelected());
+            }
+            contractPartyRolesTableController.getSelected().setContractId(contract);
+            contractPartyRolesTableController.save();
+        }
+
+        if (!(isEmpty(milestoneName) && isEmpty(milestoneDescription) && dueDate == null &&
+                assignedContactId == 0 && reminderLeadDays == 0 && completedDate == null &&
+                isEmpty(usersId) && statusId == null && responsiblePartyId == null &&
+                isEmpty(milestoneStatusName))) {
+
+            if (!isEmpty(milestoneName) ){
+                milestoneStatusesTableController.save();
+                contractKeyDatesMilestonesTableController.getSelected().setStatusId(milestoneStatusesTableController.getSelected());
+            }
+
+            contractKeyDatesMilestonesTableController.getSelected().setContractId(contract);
+            contractKeyDatesMilestonesTableController.save();
+        }
+
         if (!(isEmpty(issueCategory) && isEmpty(issueDescription) && reportedDate == null &&
                 severity == null && status == null && isEmpty(impact) &&
                 assignedToUserId == 0 && isEmpty(resolutionDetails) &&
-                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0)) {
-            if (assignFormToIssuesTableSelected()) {
-                // issueDescription - required, min 1 char, max 65535 (handled by DB size but check null/empty)
-                if (issueDescription == null || issueDescription.trim().isEmpty()) {
-                    JsfUtil.addErrorMessage("Issue description cannot be empty.");
-                    return null;
-                }
-
-                // reportedDate - must not be null and not future date
-                if (reportedDate == null) {
-                    JsfUtil.addErrorMessage("Reported date is required.");
-                    return null;
-                } else if (reportedDate.after(new Date())) {
-                    JsfUtil.addErrorMessage("Reported date cannot be in the future.");
-                    return null;
-                }
-
-                // Optionally validate optional fields length (impact, resolutionDetails) if present
-                if (impact != null && impact.length() > 65535) {
-                    JsfUtil.addErrorMessage("Impact text is too long.");
-                    return null;
-                }
-
-                if (resolutionDetails != null && resolutionDetails.length() > 65535) {
-                    JsfUtil.addErrorMessage("Resolution details text is too long.");
-                    return null;
-                }
-
-            }else {
-                return null;
+                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0 &&
+                warrantyId == null && isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) &&
+                isEmpty(serialNumber) && warrantyType == null && warrantyProviderPartyId == 0 &&
+                startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
+                !isActive && !isVoided && isEmpty(voidReason))) {
+            if(!(isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) && isEmpty(serialNumber) && warrantyType == null &&
+                    warrantyProviderPartyId == 0 && startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
+                    !isActive && !isVoided && isEmpty(voidReason))){
+                warrantiesTableController.save();
+                issuesDefectsTableController.getSelected().setWarrantyId(warrantiesTableController.getSelected());
             }
-        }
-
-//Save Payment Frequency
-        if (!isEmpty(frequencyName)) {
-            if (!assignFormToPaymentFrequenciesTableSelected()) {
-                return null;
-            }
-        }
-
-        if(assignFormToPaymentFrequenciesTableSelected() && assignFormToPenaltiesTableSelected() && assignFormToIssuesTableSelected() && assignFormToMilestonesTableSelected() && assignFormToContractsItemTableSelected() && assignFormToContractsPartyRolesTableSelected() && assignFormToRetentionsTableSelected() && assignFormToPaymentFrequenciesTableSelected() && assignFormToRebatesDiscountsTableSelected() && assignFormToPenaltiesTableSelected() && assignFormToIssuesTableSelected() && assignFormToMilestonesTableSelected()) {
-
-            ContractsTable contract = contractsTableController.save();
             issuesDefectsTableController.getSelected().setContractId(contract);
-            warrantiesTableController.save(); // Save new warranty
-            issuesDefectsTableController.getSelected().setWarrantyId(warrantiesTableController.getSelectedWarranty());
-            contractStatusesTableController.save(); // Save new status
-            contractItemTableController.getSelected().setContractId(contract);
-            contractItemTableController.save();
-            partyTypesTableController.save(); // Save new status
-            contractPartiesTableController.getSelected().setPartyTypeId(partyTypesTableController.getSelected());
-            contractPartyRolesTableController.save();
-            contractPartiesTableController.save(); // Save new status
-            contractPartyRolesTableController.getSelected().setPartyId(contractPartiesTableController.getSelected());
-            contractPartyRolesTableController.getSelected().setContractId(contract);
-            partyRoleTypesTableController.save(); // Save new status
-            contractPartyRolesTableController.getSelected().setRoleInContractId(partyRoleTypesTableController.getSelected());
-            contractKeyDatesMilestonesTableController.getSelected().setContractId(contract);
-            milestoneStatusesTableController.save(); // Save new milestone type
-            contractKeyDatesMilestonesTableController.getSelected().setStatusId(milestoneStatusesTableController.getSelected()); // Assign new type
-            contractKeyDatesMilestonesTableController.save();
-            rebatesDiscountsTableController.save();
-            retentionsTableController.save();
             issuesDefectsTableController.save();
+        }
+
+        if (!(isEmpty(breachType) && isEmpty(penalitiesDescription) && incurredDate == null &&
+                penaltyAmount == null && isEmpty(currency) && isEmpty(relatedClauseRef) &&
+                gracePeriodDaysApplied == 0 && penalitiesStatus == null &&
+                penalitiesResolutionDate == null && resolvedByUserId == 0 &&
+                isEmpty(notes) && proofDocumentId == 0)) {
+            penaltiesController.getSelected().setContractId(contract);
+            penaltiesController.save();
+        }
+
+        if (!(rebateType == null && calculationBasis == null && valueParam == null &&
+                isEmpty(rebateDescription) && isEmpty(conditionText) &&
+                trackingMetricType == null && targetValueMetric == null &&
+                currentValueMetric == null && rebateStartDate == null && rebateEndDate == null &&
+                estimatedRebateAmount == null && actualRebateAmount == null &&
+                rebateStatus == null && appliedToPaymentId == 0)) {
+            rebatesDiscountsTableController.getSelected().setContractId(contract);
+            rebatesDiscountsTableController.save();
+        }
+
+        if (!(isEmpty(retentionReason) && retainedPercentageApplied == null && initialRetainedAmount == null &&
+                isEmpty(retentionCurrency) && amountReleasedSoFar == null &&
+                retentionStatus == null && isEmpty(releaseConditionDescription) &&
+                scheduledReleaseDate == null && actualFirstReleaseDate == null &&
+                isEmpty(retentionNotes))) {
+            retentionsTableController.getSelected().setContractId(contract);
+            retentionsTableController.save();
+        }
+
+        if (!isEmpty(frequencyName)) {
             paymentFrequenciesTableController.save();
         }
+
         FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, "Contract saved", null));
+                new FacesMessage(FacesMessage.SEVERITY_INFO, "All data saved successfully.", null));
         return null;
     }
+
 
     public boolean assignFormToContractsItemTableSelected() {
         ContractItemTable selectedContractItem = contractItemTableController.getSelected();
@@ -693,9 +719,7 @@ public class ContractsController implements Serializable {
                             selectedPartyType = new PartyTypesTable();
                             partyTypesTableController.setSelected(selectedPartyType);
                         }
-
                         selectedPartyType.setTypeName(typeName);
-
                     }
                 } else {
                     selectedContractParty.setPartyTypeId(partyTypeId); // Assign existing selected status
@@ -756,10 +780,15 @@ public class ContractsController implements Serializable {
                     milestoneStatusesTableController.setSelected(selectedMilestoneType);
                 }
 
-                selectedMilestoneType.setStatusName(statusName);
+                selectedMilestoneType.setStatusName(milestoneStatusName);
             }
         } else {
             selectedMilestone.setStatusId(statusId); // Assign existing selected type
+        }
+
+        if(isEmpty(milestoneName)){
+            JsfUtil.addErrorMessage("Milestone Name is Required.");
+            return false;
         }
 
         // === Set other milestone details
@@ -793,6 +822,11 @@ public class ContractsController implements Serializable {
                     warrantiesTableController.setSelected(selectedWarranty);
                 }
 
+                if(endDate == null && startDate == null){
+                    JsfUtil.addErrorMessage("Warranties Start and End Date is Required.");
+                    return false;
+                }
+
                 selectedWarranty.setWarrantedItemDescription(warrantedItemDescription);
                 selectedWarranty.setManufacturerModel(manufacturerModel);
                 selectedWarranty.setSerialNumber(serialNumber);
@@ -806,17 +840,37 @@ public class ContractsController implements Serializable {
                 selectedWarranty.setIsVoided(isVoided);
                 selectedWarranty.setVoidReason(voidReason);
 
-                if(endDate == null && startDate == null){
-                    JsfUtil.addErrorMessage("Warranties Start and End Date is Required.");
-                    return false;
-                }
             }
         } else {
             selectedIssue.setWarrantyId(warrantyId); // Assign existing
         }
 
-        if(isEmpty(issueCategory)){
-            JsfUtil.addErrorMessage("Issue Category is Required.");
+        if(isEmpty(issueCategory) || isEmpty(issueDescription) || isEmpty(impact)){
+            JsfUtil.addErrorMessage("Issue Category, Issue Discription and Impact are Required in Issues/Defect table.");
+            return false;
+        }
+        if (issueDescription == null || issueDescription.trim().isEmpty()) {
+            JsfUtil.addErrorMessage("Issue description cannot be empty.");
+            return false;
+        }
+
+        // reportedDate - must not be null and not future date
+        if (reportedDate == null) {
+            JsfUtil.addErrorMessage("Reported date is required.");
+            return false;
+        } else if (reportedDate.after(new Date())) {
+            JsfUtil.addErrorMessage("Reported date cannot be in the future.");
+            return false;
+        }
+
+        // Optionally validate optional fields length (impact, resolutionDetails) if present
+        if (impact != null && impact.length() > 65535) {
+            JsfUtil.addErrorMessage("Impact text is too long.");
+            return false;
+        }
+
+        if (resolutionDetails != null && resolutionDetails.length() > 65535) {
+            JsfUtil.addErrorMessage("Resolution details text is too long.");
             return false;
         }
 
@@ -832,6 +886,7 @@ public class ContractsController implements Serializable {
         selectedIssue.setResolutionDate(resolutionDate);
         selectedIssue.setClosureDate(closureDate);
         selectedIssue.setClientAcceptanceDocId(clientAcceptanceDocId);
+
 
         return true;
     }
@@ -857,6 +912,10 @@ public class ContractsController implements Serializable {
         selectedPenalty.setNotes(notes);
         selectedPenalty.setProofDocumentId(proofDocumentId);
 
+        if(isEmpty(breachType)){
+            JsfUtil.addErrorMessage("Breach Type is Required.");
+            return false;
+        }
         return true;
     }
 
@@ -865,6 +924,81 @@ public class ContractsController implements Serializable {
         if (selectedRebate == null) {
             selectedRebate = new RebatesDiscountsTable();
             rebatesDiscountsTableController.setSelected(selectedRebate);
+        }
+        BigDecimal max = new BigDecimal("9999999999999999.99");
+        BigDecimal min = BigDecimal.ZERO;
+
+        // Validate valueParam
+        if (valueParam == null || valueParam.compareTo(min) < 0 || valueParam.compareTo(max) > 0) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Invalid value: Value Param must be between 0.00 and 9999999999999999.99", null));
+            return false;
+        }
+
+        // Validate actualRebateAmount
+        if (actualRebateAmount != null &&
+                (actualRebateAmount.compareTo(min) < 0 || actualRebateAmount.compareTo(max) > 0)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Invalid value: Actual Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+            return false;
+        }
+
+        // Validate currentValueMetric
+        if (currentValueMetric != null &&
+                (currentValueMetric.compareTo(min) < 0 || currentValueMetric.compareTo(max) > 0)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Invalid value: Current Value Metric must be between 0.00 and 9999999999999999.99", null));
+            return false;
+        }
+
+        // Validate estimatedRebateAmount
+        if (estimatedRebateAmount != null &&
+                (estimatedRebateAmount.compareTo(min) < 0 || estimatedRebateAmount.compareTo(max) > 0)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Invalid value: Estimated Rebate Amount must be between 0.00 and 9999999999999999.99", null));
+            return false;
+        }
+
+        // Validate targetValueMetric
+        if (targetValueMetric != null &&
+                (targetValueMetric.compareTo(min) < 0 || targetValueMetric.compareTo(max) > 0)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Invalid value: Target Value Metric must be between 0.00 and 9999999999999999.99", null));
+            return false;
+        }
+
+        // Validate required fields
+        if (status == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Status is required.", null));
+            return false;
+        }
+
+        if (rebateType == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Rebate Type is required.", null));
+            return false;
+        }
+
+        if (calculationBasis == null) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Calculation Basis is required.", null));
+            return false;
+        }
+
+        if (conditionText == null || conditionText.trim().isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Condition Text is required.", null));
+            return false;
         }
 
         selectedRebate.setRebateType(rebateType);
@@ -902,6 +1036,14 @@ public class ContractsController implements Serializable {
         if (selectedRetention == null) {
             selectedRetention = new RetentionsTable();
             retentionsTableController.setSelected(selectedRetention);
+        }
+
+        BigDecimal percentage = retentionsTableController.getSelected().getRetainedPercentageApplied();
+        if (percentage != null && (percentage.compareTo(new BigDecimal("999.99")) > 0 || percentage.compareTo(BigDecimal.ZERO) < 0)) {
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Retained Percentage must be between 0.00 and 999.99", null));
+            return false;
         }
 
         selectedRetention.setRetentionReason(retentionReason);
