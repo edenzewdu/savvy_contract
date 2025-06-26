@@ -253,6 +253,13 @@ public class ContractsTableController implements Serializable {
         }
         return selected;
     }
+    public boolean existsByContractTitle(String contractTitle) {
+        if (getFacade().existsByContractTitle(contractTitle)) {
+            JsfUtil.addErrorMessage("Contract with this title already exists in the system.");
+            return true;
+        }
+        return false;
+    }
 
     public void saveRow() {
         for (ContractsTable item : getEditItems()) {

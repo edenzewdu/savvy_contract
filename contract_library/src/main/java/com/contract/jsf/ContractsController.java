@@ -407,61 +407,138 @@ public class ContractsController implements Serializable {
                 issueValid = true, freqValid = true;
 
         // === 3. Validation Phase (only validation here, no saving yet)
-        if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
+        if (!(isZero(amountQuantity) &&
+               isZero(itemsTable) &&
+               isZero(unitOfMeasure) &&
+               isZero(unitAmount) &&
+               isZero(extendedAmount) &&
+               dateEnered == null &&
+               dateUpdated == null)) {
+
             itemValid = assignFormToContractsItemTableSelected();
-            if(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0){
+
+            if (isZero(amountQuantity) &&
+                isZero(itemsTable) &&
+                isZero(unitOfMeasure) &&
+                isZero(unitAmount) &&
+                isZero(extendedAmount)) {
+
                 JsfUtil.addErrorMessage("Amount Quantity, Items Table, Unit Of Measure, Unit Amount and Extended Amount are required in Contract Items Table.");
                 itemValid = false;
             }
         }
 
-        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0 && roleInContractId == null && isEmpty(roleName))){
+        if (!(
+                !isPrimaryCounterParty &&
+                        partyId == null &&
+                        isEmpty(legalName) &&
+                        isEmpty(shortName) &&
+                        partyTypeId == null &&
+                        isEmpty(typeName) &&
+                        isEmpty(registrationNumber) &&
+                        isZero(addressNumberAb) &&
+                        roleInContractId == null &&
+                        isEmpty(roleName))) {
+
             roleValid = assignFormToContractsPartyRolesTableSelected();
-            if (contractPartyRolesTableController.getSelected().getPartyId() == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0) {
+
+            if (contractPartyRolesTableController.getSelected().getPartyId() == null &&
+                    isEmpty(legalName) &&
+                    isEmpty(shortName) &&
+                    partyTypeId == null &&
+                    isEmpty(typeName) &&
+                    isEmpty(registrationNumber) &&
+                    isZero(addressNumberAb)) {
+
                 JsfUtil.addErrorMessage("Party ID is required.");
                 roleValid = false;
             }
-            if (contractPartyRolesTableController.getSelected().getRoleInContractId() == null && isEmpty(roleName)) {
+
+            if (contractPartyRolesTableController.getSelected().getRoleInContractId() == null &&
+                    isEmpty(roleName)) {
+
                 JsfUtil.addErrorMessage("Role In Contract ID is required.");
                 roleValid = false;
             }
-
         }
 
-        if (!(isEmpty(milestoneName) && isEmpty(milestoneDescription) && dueDate == null &&
-                assignedContactId == 0 && reminderLeadDays == 0 && completedDate == null &&
-                isEmpty(usersId) && statusId == null && responsiblePartyId == null &&
+
+        if (!(isEmpty(milestoneName) &&
+                isEmpty(milestoneDescription) &&
+                dueDate == null &&
+                isZero(assignedContactId) &&
+                isZero(reminderLeadDays) &&
+                completedDate == null &&
+                isEmpty(usersId) &&
+                statusId == null &&
+                responsiblePartyId == null &&
                 isEmpty(milestoneStatusName))) {
+
             milestoneValid = assignFormToMilestonesTableSelected();
         }
 
-        if (!(isEmpty(issueCategory) && isEmpty(issueDescription) && reportedDate == null &&
-                severity == null && status == null && isEmpty(impact) &&
-                assignedToUserId == 0 && isEmpty(resolutionDetails) &&
-                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0 &&
-                warrantyId == null && isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) &&
-                isEmpty(serialNumber) && warrantyType == null && warrantyProviderPartyId == 0 &&
-                startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
-                !isActive && !isVoided && isEmpty(voidReason))) {
+        if (!(isEmpty(issueCategory) &&
+                isEmpty(issueDescription) &&
+                reportedDate == null &&
+                severity == null &&
+                status == null &&
+                isEmpty(impact) &&
+                isZero(assignedToUserId) &&
+                isEmpty(resolutionDetails) &&
+                resolutionDate == null &&
+                closureDate == null &&
+                isZero(clientAcceptanceDocId) &&
+                warrantyId == null &&
+                isEmpty(warrantedItemDescription) &&
+                isEmpty(manufacturerModel) &&
+                isEmpty(serialNumber) &&
+                warrantyType == null &&
+                isZero(warrantyProviderPartyId) &&
+                startDate == null &&
+                endDate == null &&
+                isEmpty(coverageScopeText) &&
+                isEmpty(exclusionsText) &&
+                (isActive == null || !isActive) &&
+                (isVoided == null || !isVoided) &&
+                isEmpty(voidReason))) {
+
             issueValid = assignFormToIssuesTableSelected();
         }
 
-        if (!(isEmpty(breachType) && isEmpty(penalitiesDescription) && incurredDate == null &&
-                penaltyAmount == null && isEmpty(currency) && isEmpty(relatedClauseRef) &&
-                gracePeriodDaysApplied == 0 && penalitiesStatus == null &&
-                penalitiesResolutionDate == null && resolvedByUserId == 0 &&
-                isEmpty(notes) && proofDocumentId == 0)) {
+        if (!(isEmpty(breachType) &&
+                isEmpty(penalitiesDescription) &&
+                incurredDate == null &&
+                penaltyAmount == null &&
+                isEmpty(currency) &&
+                isEmpty(relatedClauseRef) &&
+                isZero(gracePeriodDaysApplied) &&
+                penalitiesStatus == null &&
+                penalitiesResolutionDate == null &&
+                isZero(resolvedByUserId) &&
+                isEmpty(notes) &&
+                isZero(proofDocumentId))) {
 
             penaltyValid = assignFormToPenaltiesTableSelected();
         }
 
-        if (!(rebateType == null && calculationBasis == null && valueParam == null &&
-                isEmpty(rebateDescription) && isEmpty(conditionText) &&
-                trackingMetricType == null && targetValueMetric == null &&
-                currentValueMetric == null && rebateStartDate == null && rebateEndDate == null &&
-                estimatedRebateAmount == null && actualRebateAmount == null &&
-                rebateStatus == null && appliedToPaymentId == 0)) {
+
+        if (!(rebateType == null &&
+                calculationBasis == null &&
+                valueParam == null &&
+                isEmpty(rebateDescription) &&
+                isEmpty(conditionText) &&
+                trackingMetricType == null &&
+                targetValueMetric == null &&
+                currentValueMetric == null &&
+                rebateStartDate == null &&
+                rebateEndDate == null &&
+                estimatedRebateAmount == null &&
+                actualRebateAmount == null &&
+                rebateStatus == null &&
+                isZero(appliedToPaymentId))) {
+
             rebateValid = assignFormToRebatesDiscountsTableSelected();
+
             BigDecimal max = new BigDecimal("9999999999999999.99");
             BigDecimal min = BigDecimal.ZERO;
 
@@ -537,8 +614,8 @@ public class ContractsController implements Serializable {
                                 "Condition Text is required.", null));
                 rebateValid = false;
             }
-
         }
+
 
         if (!(isEmpty(retentionReason) && retainedPercentageApplied == null && initialRetainedAmount == null &&
                 isEmpty(retentionCurrency) && amountReleasedSoFar == null &&
@@ -561,18 +638,10 @@ public class ContractsController implements Serializable {
             return null;
         }
 
-        if (!(isEmpty(statusName) && isEmpty(statusDescription))) {
-            if(contractStatusId == null){
-                contractStatusesTableController.save();
-                contractsTableController.getSelected().setContractStatusId(contractStatusesTableController.getSelected());
-            }
-        }
-        if (!(isEmpty(typeName) && isEmpty(typeDescription) && isEmpty(contractSide))) {
-            if(contractTypeId == null){
-                contractTypesTableController.save();
-                contractsTableController.getSelected().setContractTypeId(contractTypesTableController.getSelected());
-            }
 
+        if (contractsTableController.existsByContractTitle(contractsTableController.getSelected().getContractTitle())) {
+            JsfUtil.addErrorMessage("Contract with this title already exists in the system.");
+            return null;
         }
 
         // === 5. Saving Phase (only happens if all validations pass)
@@ -582,16 +651,57 @@ public class ContractsController implements Serializable {
             JsfUtil.addErrorMessage("Contract save failed. Aborting all operations.");
             return null;
         }
+        if (!(isEmpty(statusName) && isEmpty(statusDescription))) {
+            if(contractStatusId == null){
+                contractStatusesTableController.save();
+                contractsTableController.getSelected().setContractStatusId(contractStatusesTableController.getSelected());
+                contractsTableController.save();
+            }
+        }
+
+        if (!(isEmpty(typeName) && isEmpty(typeDescription) && isEmpty(contractSide))) {
+            if(contractTypeId == null){
+                contractTypesTableController.save();
+                contractsTableController.getSelected().setContractTypeId(contractTypesTableController.getSelected());
+                contractsTableController.save();
+            }
+
+        }
 
         // Set contract ID to all related entities
-        if(!(amountQuantity == 0 && itemsTable == 0 && unitOfMeasure == 0 && unitAmount == 0 && extendedAmount == 0 && dateEnered == null && dateUpdated == null)){
+        if (!(isZero(amountQuantity) &&
+                isZero(itemsTable) &&
+                isZero(unitOfMeasure) &&
+                isZero(unitAmount) &&
+                isZero(extendedAmount) &&
+                dateEnered == null &&
+                dateUpdated == null)) {
             contractItemTableController.getSelected().setContractId(contract);
             contractItemTableController.save();
         }
 
-        if(!(!isPrimaryCounterParty && partyId == null && isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0 && roleInContractId == null && isEmpty(roleName))){
-            if(!(isEmpty(legalName) && isEmpty(shortName) && partyTypeId == null && isEmpty(typeName) && isEmpty(registrationNumber) && addressNumberAb == 0)){
-                if(!(isEmpty(typeName))){
+            roleValid = assignFormToContractsPartyRolesTableSelected();
+
+
+                if (!(
+                        !isPrimaryCounterParty &&
+                                partyId == null &&
+                                isEmpty(legalName) &&
+                                isEmpty(shortName) &&
+                                partyTypeId == null &&
+                                isEmpty(typeName) &&
+                                isEmpty(registrationNumber) &&
+                                isZero(addressNumberAb) &&
+                                roleInContractId == null &&
+                                isEmpty(roleName))) {
+                    if (contractPartyRolesTableController.getSelected().getPartyId() == null &&
+                            isEmpty(legalName) &&
+                            isEmpty(shortName) &&
+                            partyTypeId == null &&
+                            isEmpty(typeName) &&
+                            isEmpty(registrationNumber) &&
+                            isZero(addressNumberAb)) {
+                        if(!(isEmpty(typeName))){
                     partyTypesTableController.save();
                     contractPartiesTableController.getSelected().setPartyTypeId(partyTypesTableController.getSelected());
                 }
@@ -602,9 +712,15 @@ public class ContractsController implements Serializable {
             contractPartyRolesTableController.save();
         }
 
-        if (!(isEmpty(milestoneName) && isEmpty(milestoneDescription) && dueDate == null &&
-                assignedContactId == 0 && reminderLeadDays == 0 && completedDate == null &&
-                isEmpty(usersId) && statusId == null && responsiblePartyId == null &&
+        if (!(isEmpty(milestoneName) &&
+                isEmpty(milestoneDescription) &&
+                dueDate == null &&
+                isZero(assignedContactId) &&
+                isZero(reminderLeadDays) &&
+                completedDate == null &&
+                isEmpty(usersId) &&
+                statusId == null &&
+                responsiblePartyId == null &&
                 isEmpty(milestoneStatusName))) {
 
             if (!isEmpty(milestoneName) ){
@@ -616,47 +732,100 @@ public class ContractsController implements Serializable {
             contractKeyDatesMilestonesTableController.save();
         }
 
-        if (!(isEmpty(issueCategory) && isEmpty(issueDescription) && reportedDate == null &&
-                severity == null && status == null && isEmpty(impact) &&
-                assignedToUserId == 0 && isEmpty(resolutionDetails) &&
-                resolutionDate == null && closureDate == null && clientAcceptanceDocId == 0 &&
-                warrantyId == null && isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) &&
-                isEmpty(serialNumber) && warrantyType == null && warrantyProviderPartyId == 0 &&
-                startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
-                !isActive && !isVoided && isEmpty(voidReason))) {
-            if(!(isEmpty(warrantedItemDescription) && isEmpty(manufacturerModel) && isEmpty(serialNumber) && warrantyType == null &&
-                    warrantyProviderPartyId == 0 && startDate == null && endDate == null && isEmpty(coverageScopeText) && isEmpty(exclusionsText) &&
-                    !isActive && !isVoided && isEmpty(voidReason))){
+        if (!(isEmpty(issueCategory) &&
+                isEmpty(issueDescription) &&
+                reportedDate == null &&
+                severity == null &&
+                status == null &&
+                isEmpty(impact) &&
+                isZero(assignedToUserId) &&
+                isEmpty(resolutionDetails) &&
+                resolutionDate == null &&
+                closureDate == null &&
+                isZero(clientAcceptanceDocId) &&
+                warrantyId == null &&
+                isEmpty(warrantedItemDescription) &&
+                isEmpty(manufacturerModel) &&
+                isEmpty(serialNumber) &&
+                warrantyType == null &&
+                isZero(warrantyProviderPartyId) &&
+                startDate == null &&
+                endDate == null &&
+                isEmpty(coverageScopeText) &&
+                isEmpty(exclusionsText) &&
+                (isActive == null || !isActive) &&
+                (isVoided == null || !isVoided) &&
+                isEmpty(voidReason))) {
+
+            // Additional check for warranty fields not all empty or null
+            if (!(isEmpty(warrantedItemDescription) &&
+                    isEmpty(manufacturerModel) &&
+                    isEmpty(serialNumber) &&
+                    warrantyType == null &&
+                    isZero(warrantyProviderPartyId) &&
+                    startDate == null &&
+                    endDate == null &&
+                    isEmpty(coverageScopeText) &&
+                    isEmpty(exclusionsText) &&
+                    (isActive == null || !isActive) &&
+                    (isVoided == null || !isVoided) &&
+                    isEmpty(voidReason))) {
+
                 warrantiesTableController.save();
                 issuesDefectsTableController.getSelected().setWarrantyId(warrantiesTableController.getSelected());
             }
+
             issuesDefectsTableController.getSelected().setContractId(contract);
             issuesDefectsTableController.save();
         }
 
-        if (!(isEmpty(breachType) && isEmpty(penalitiesDescription) && incurredDate == null &&
-                penaltyAmount == null && isEmpty(currency) && isEmpty(relatedClauseRef) &&
-                gracePeriodDaysApplied == 0 && penalitiesStatus == null &&
-                penalitiesResolutionDate == null && resolvedByUserId == 0 &&
-                isEmpty(notes) && proofDocumentId == 0)) {
+
+        // Check if penalty fields are not all empty/default before saving
+        if (!(isEmpty(breachType) &&
+                isEmpty(penalitiesDescription) &&
+                incurredDate == null &&
+                penaltyAmount == null &&
+                isEmpty(currency) &&
+                isEmpty(relatedClauseRef) &&
+                isZero(gracePeriodDaysApplied) &&
+                penalitiesStatus == null &&
+                penalitiesResolutionDate == null &&
+                isZero(resolvedByUserId) &&
+                isEmpty(notes) &&
+                isZero(proofDocumentId))) {
+
             penaltiesController.getSelected().setContractId(contract);
             penaltiesController.save();
         }
 
-        if (!(rebateType == null && calculationBasis == null && valueParam == null &&
-                isEmpty(rebateDescription) && isEmpty(conditionText) &&
-                trackingMetricType == null && targetValueMetric == null &&
-                currentValueMetric == null && rebateStartDate == null && rebateEndDate == null &&
-                estimatedRebateAmount == null && actualRebateAmount == null &&
-                rebateStatus == null && appliedToPaymentId == 0)) {
+        // Check if rebate fields are not all empty/default before saving
+        if (!(rebateType == null &&
+                calculationBasis == null &&
+                valueParam == null &&
+                isEmpty(rebateDescription) &&
+                isEmpty(conditionText) &&
+                trackingMetricType == null &&
+                targetValueMetric == null &&
+                currentValueMetric == null &&
+                rebateStartDate == null &&
+                rebateEndDate == null &&
+                estimatedRebateAmount == null &&
+                actualRebateAmount == null &&
+                rebateStatus == null &&
+                isZero(appliedToPaymentId))) {
             rebatesDiscountsTableController.getSelected().setContractId(contract);
             rebatesDiscountsTableController.save();
         }
 
-        if (!(isEmpty(retentionReason) && retainedPercentageApplied == null && initialRetainedAmount == null &&
-                isEmpty(retentionCurrency) && amountReleasedSoFar == null &&
-                retentionStatus == null && isEmpty(releaseConditionDescription) &&
-                scheduledReleaseDate == null && actualFirstReleaseDate == null &&
+        if (!(isEmpty(retentionReason) &&
+                retainedPercentageApplied == null &&
+                initialRetainedAmount == null &&
+                isEmpty(retentionCurrency) &&
+                amountReleasedSoFar == null &&
+                retentionStatus == null &&
+                isEmpty(releaseConditionDescription) &&
+                scheduledReleaseDate == null &&
+                actualFirstReleaseDate == null &&
                 isEmpty(retentionNotes))) {
             retentionsTableController.getSelected().setContractId(contract);
             retentionsTableController.save();
@@ -669,6 +838,10 @@ public class ContractsController implements Serializable {
         FacesContext.getCurrentInstance().addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "All data saved successfully.", null));
         return null;
+    }
+
+    private boolean isZero(Number num) {
+        return num == null || num.doubleValue() == 0.0;
     }
 
 
